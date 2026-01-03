@@ -118,6 +118,8 @@ async def get_subnet_info(site_id: str, network_id: str, settings: Settings) -> 
                     "dhcpd_leasetime": network_data.get("dhcpd_leasetime"),
                     "dhcpd_dns_1": network_data.get("dhcpd_dns_1"),
                     "dhcpd_dns_2": network_data.get("dhcpd_dns_2"),
+                    "dhcpd_dns_3": network_data.get("dhcpd_dns_3"),
+                    "dhcpd_dns_4": network_data.get("dhcpd_dns_4"),
                     "dhcpd_gateway": network_data.get("dhcpd_gateway"),
                     "domain_name": network_data.get("domain_name"),
                 }

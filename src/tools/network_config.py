@@ -26,6 +26,8 @@ async def create_network(
     dhcp_stop: str | None = None,
     dhcp_dns_1: str | None = None,
     dhcp_dns_2: str | None = None,
+    dhcp_dns_3: str | None = None,
+    dhcp_dns_4: str | None = None,
     domain_name: str | None = None,
     confirm: bool = False,
     dry_run: bool = False,
@@ -90,6 +92,10 @@ async def create_network(
             network_data["dhcpd_dns_1"] = dhcp_dns_1
         if dhcp_dns_2:
             network_data["dhcpd_dns_2"] = dhcp_dns_2
+        if dhcp_dns_3:
+            network_data["dhcpd_dns_3"] = dhcp_dns_3
+        if dhcp_dns_4:
+            network_data["dhcpd_dns_4"] = dhcp_dns_4
         if domain_name:
             network_data["domain_name"] = domain_name
 
@@ -159,6 +165,8 @@ async def update_network(
     dhcp_stop: str | None = None,
     dhcp_dns_1: str | None = None,
     dhcp_dns_2: str | None = None,
+    dhcp_dns_3: str | None = None,
+    dhcp_dns_4: str | None = None,
     domain_name: str | None = None,
     confirm: bool = False,
     dry_run: bool = False,
@@ -266,6 +274,10 @@ async def update_network(
                 update_data["dhcpd_dns_1"] = dhcp_dns_1
             if dhcp_dns_2 is not None:
                 update_data["dhcpd_dns_2"] = dhcp_dns_2
+            if dhcp_dns_3 is not None:
+                update_data["dhcpd_dns_3"] = dhcp_dns_3
+            if dhcp_dns_4 is not None:
+                update_data["dhcpd_dns_4"] = dhcp_dns_4
             if domain_name is not None:
                 update_data["domain_name"] = domain_name
 
