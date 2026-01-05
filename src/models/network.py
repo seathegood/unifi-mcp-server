@@ -28,6 +28,8 @@ class Network(BaseModel):
     dhcpd_dns_enabled: bool | None = Field(None, description="Whether DHCP DNS is enabled")
     dhcpd_dns_1: str | None = Field(None, description="Primary DNS server")
     dhcpd_dns_2: str | None = Field(None, description="Secondary DNS server")
+    dhcpd_dns_3: str | None = Field(None, description="Tertiary DNS server")
+    dhcpd_dns_4: str | None = Field(None, description="Quaternary DNS server")
     dhcpd_gateway_enabled: bool | None = Field(None, description="Whether DHCP gateway is enabled")
     dhcpd_gateway: str | None = Field(None, description="DHCP gateway IP")
 
