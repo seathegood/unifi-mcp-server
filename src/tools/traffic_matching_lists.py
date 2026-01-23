@@ -351,9 +351,7 @@ async def delete_traffic_matching_list(
             except Exception as err:
                 raise ResourceNotFoundError("traffic_matching_list", list_id) from err
 
-            await client.delete(
-                f"/integration/v1/sites/{site_id}/traffic-matching-lists/{list_id}"
-            )
+            await client.delete(f"/integration/v1/sites/{site_id}/traffic-matching-lists/{list_id}")
 
             logger.info(f"Deleted traffic matching list '{list_id}' from site '{site_id}'")
             log_audit(
