@@ -29,6 +29,7 @@ from .tools import site_manager as site_manager_tools
 from .tools import site_vpn as site_vpn_tools
 from .tools import sites as sites_tools
 from .tools import traffic_flows as traffic_flows_tools
+from .tools import radius as radius_tools
 from .tools import traffic_matching_lists as tml_tools
 from .tools import vouchers as vouchers_tools
 from .tools import vpn as vpn_tools
@@ -1061,6 +1062,211 @@ async def bulk_delete_vouchers(
     return await vouchers_tools.bulk_delete_vouchers(
         site_id, filter_expr, settings, confirm, dry_run
     )
+
+
+# RADIUS Profile Tools
+@mcp.tool()
+async def list_radius_profiles(site_id: str) -> list[dict]:
+    """List all RADIUS profiles for a site."""
+    return await radius_tools.list_radius_profiles(site_id, settings)
+
+
+@mcp.tool()
+async def get_radius_profile(site_id: str, profile_id: str) -> dict:
+    """Get details for a specific RADIUS profile."""
+    return await radius_tools.get_radius_profile(site_id, profile_id, settings)
+
+
+@mcp.tool()
+async def create_radius_profile(
+    site_id: str,
+    name: str,
+    auth_server: str,
+    auth_secret: str,
+    auth_port: int = 1812,
+    acct_server: str | None = None,
+    acct_port: int = 1813,
+    acct_secret: str | None = None,
+    use_same_secret: bool = True,
+    vlan_enabled: bool = False,
+    confirm: bool = False,
+    dry_run: bool = False,
+) -> dict:
+    """Create a new RADIUS profile (requires confirm=True)."""
+    return await radius_tools.create_radius_profile(
+        site_id,
+        name,
+        auth_server,
+        auth_secret,
+        settings,
+        auth_port,
+        acct_server,
+        acct_port,
+        acct_secret,
+        use_same_secret,
+        vlan_enabled,
+        confirm,
+        dry_run,
+    )
+
+
+@mcp.tool()
+async def update_radius_profile(
+    site_id: str,
+    profile_id: str,
+    name: str | None = None,
+    auth_server: str | None = None,
+    auth_secret: str | None = None,
+    auth_port: int | None = None,
+    acct_server: str | None = None,
+    acct_port: int | None = None,
+    acct_secret: str | None = None,
+    vlan_enabled: bool | None = None,
+    enabled: bool | None = None,
+    confirm: bool = False,
+    dry_run: bool = False,
+) -> dict:
+    """Update an existing RADIUS profile (requires confirm=True)."""
+    return await radius_tools.update_radius_profile(
+        site_id,
+        profile_id,
+        settings,
+        name,
+        auth_server,
+        auth_secret,
+        auth_port,
+        acct_server,
+        acct_port,
+        acct_secret,
+        vlan_enabled,
+        enabled,
+        confirm,
+        dry_run,
+    )
+
+
+@mcp.tool()
+async def delete_radius_profile(
+    site_id: str, profile_id: str, confirm: bool = False, dry_run: bool = False
+) -> dict:
+    """Delete a RADIUS profile (requires confirm=True)."""
+    return await radius_tools.delete_radius_profile(site_id, profile_id, settings, confirm, dry_run)
+
+
+# RADIUS Account Tools
+@mcp.tool()
+async def list_radius_accounts(site_id: str) -> list[dict]:
+    """List all RADIUS accounts for a site."""
+    return await radius_tools.list_radius_accounts(site_id, settings)
+
+
+@mcp.tool()
+async def create_radius_account(
+    site_id: str,
+    username: str,
+    password: str,
+    vlan_id: int | None = None,
+    enabled: bool = True,
+    note: str | None = None,
+    confirm: bool = False,
+    dry_run: bool = False,
+) -> dict:
+    """Create a new RADIUS account (requires confirm=True)."""
+    return await radius_tools.create_radius_account(
+        site_id, username, password, settings, vlan_id, enabled, note, confirm, dry_run
+    )
+
+
+@mcp.tool()
+async def delete_radius_account(
+    site_id: str, account_id: str, confirm: bool = False, dry_run: bool = False
+) -> dict:
+    """Delete a RADIUS account (requires confirm=True)."""
+    return await radius_tools.delete_radius_account(site_id, account_id, settings, confirm, dry_run)
+
+
+# Guest Portal Tools
+@mcp.tool()
+async def get_guest_portal_config(site_id: str) -> dict:
+    """Get guest portal configuration for a site."""
+    return await radius_tools.get_guest_portal_config(site_id, settings)
+
+
+@mcp.tool()
+async def configure_guest_portal(
+    site_id: str,
+    portal_title: str | None = None,
+    auth_method: str | None = None,
+    password: str | None = None,
+    session_timeout: int | None = None,
+    redirect_enabled: bool | None = None,
+    redirect_url: str | None = None,
+    terms_of_service_enabled: bool | None = None,
+    terms_of_service_text: str | None = None,
+    confirm: bool = False,
+    dry_run: bool = False,
+) -> dict:
+    """Configure guest portal settings (requires confirm=True)."""
+    return await radius_tools.configure_guest_portal(
+        site_id,
+        settings,
+        portal_title,
+        auth_method,
+        password,
+        session_timeout,
+        redirect_enabled,
+        redirect_url,
+        terms_of_service_enabled,
+        terms_of_service_text,
+        confirm,
+        dry_run,
+    )
+
+
+# Hotspot Package Tools
+@mcp.tool()
+async def list_hotspot_packages(site_id: str) -> list[dict]:
+    """List all hotspot packages for a site."""
+    return await radius_tools.list_hotspot_packages(site_id, settings)
+
+
+@mcp.tool()
+async def create_hotspot_package(
+    site_id: str,
+    name: str,
+    duration_minutes: int,
+    download_limit_kbps: int | None = None,
+    upload_limit_kbps: int | None = None,
+    download_quota_mb: int | None = None,
+    upload_quota_mb: int | None = None,
+    price: float | None = None,
+    currency: str = "USD",
+    confirm: bool = False,
+    dry_run: bool = False,
+) -> dict:
+    """Create a new hotspot package (requires confirm=True)."""
+    return await radius_tools.create_hotspot_package(
+        site_id,
+        name,
+        duration_minutes,
+        settings,
+        download_limit_kbps,
+        upload_limit_kbps,
+        download_quota_mb,
+        upload_quota_mb,
+        price,
+        currency,
+        confirm,
+        dry_run,
+    )
+
+
+@mcp.tool()
+async def delete_hotspot_package(
+    site_id: str, package_id: str, confirm: bool = False, dry_run: bool = False
+) -> dict:
+    """Delete a hotspot package (requires confirm=True)."""
+    return await radius_tools.delete_hotspot_package(site_id, package_id, settings, confirm, dry_run)
 
 
 # Firewall Zone Tools
