@@ -24,6 +24,13 @@ from .helpers import (
     sanitize_dict,
 )
 from .logger import get_logger, log_api_request, log_audit_event
+from .sanitize import (
+    sanitize_dict as sanitize_sensitive_dict,
+    sanitize_for_logging,
+    sanitize_list,
+    sanitize_log_message,
+    sanitize_sensitive_data,
+)
 from .validators import (
     validate_confirmation,
     validate_device_id,
@@ -54,6 +61,12 @@ __all__ = [
     "get_logger",
     "log_api_request",
     "log_audit_event",
+    # Sanitization
+    "sanitize_sensitive_dict",
+    "sanitize_for_logging",
+    "sanitize_list",
+    "sanitize_log_message",
+    "sanitize_sensitive_data",
     # Validators
     "validate_mac_address",
     "validate_ip_address",
