@@ -1607,3 +1607,809 @@ All list endpoints return a standard paginated response:
 **Documentation Version:** v10.0.160
 **Last Updated:** January 23, 2026
 **Source:** UniFi Network API v10.0.160 (Merged Update)
+
+
+
+## Site Manager API - New Endpoints
+
+*Added: 2026-01-24*
+
+### Version Control
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Reference:** [Version Control](https://developer.ui.com/site-manager/v1.0.0/versioncontrol)
+
+---
+
+### List Hosts
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L "https://api.ui.com/v1/hosts?pageSize=10&nextToken=602232A870250000000006C514FF00000000073DD8DB000000006369FDA2%3A1467082514" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [List Hosts](https://developer.ui.com/site-manager/v1.0.0/listhosts)
+
+---
+
+### Get Host by ID
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/hosts/{id}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get Host by ID](https://developer.ui.com/site-manager/v1.0.0/gethostbyid)
+
+---
+
+### List Sites
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L "https://api.ui.com/v1/sites?pageSize=10&nextToken=602232A870250000000006C514FF00000000073DD8DB000000006369FDA2%3A1467082514" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [List Sites](https://developer.ui.com/site-manager/v1.0.0/listsites)
+
+---
+
+### Get ISP Metrics
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/isp-metrics/{type}?beginTimestamp=2024-06-30T13%3A35%3A00Z&endTimestamp=2024-06-30T15%3A35%3A00Z&duration={duration}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get ISP Metrics](https://developer.ui.com/site-manager/v1.0.0/getispmetrics)
+
+---
+
+
+
+
+## Network API - New Endpoints
+
+*Added: 2026-01-24*
+
+### Connector - POST
+
+- **Method:** `GET`
+- **Endpoint:** `requests`
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{id}/*path" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>" \-H "Content-Type: application/json" \-d "{  \"action\": \"AUTHORIZE_GUEST_ACCESS\"}"
+```
+
+**Reference:** [Connector - POST](https://developer.ui.com/network/v10.1.68/connectorpost)
+
+---
+
+### Connector - GET
+
+- **Method:** `GET`
+- **Endpoint:** `requests`
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{id}/*path" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Connector - GET](https://developer.ui.com/network/v10.1.68/connectorget)
+
+---
+
+### Connector - PUT
+
+- **Method:** `GET`
+- **Endpoint:** `requests`
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X PUT "https://api.ui.com/v1/connector/consoles/{id}/*path" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>" \-H "Content-Type: application/json" \-d "{  \"name\": \"Updated Firewall Zone\"}"
+```
+
+**Reference:** [Connector - PUT](https://developer.ui.com/network/v10.1.68/connectorput)
+
+---
+
+### Connector - DELETE
+
+- **Method:** `GET`
+- **Endpoint:** `requests`
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X DELETE "https://api.ui.com/v1/connector/consoles/{id}/*path" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Connector - DELETE](https://developer.ui.com/network/v10.1.68/connectordelete)
+
+---
+
+### Connector - PATCH
+
+- **Method:** `GET`
+- **Endpoint:** `requests`
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X PATCH "https://api.ui.com/v1/connector/consoles/{id}/*path" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>" \-H "Content-Type: application/json" \-d "{  \"name\": \"Updated Viewer Name\"}"
+```
+
+**Reference:** [Connector - PATCH](https://developer.ui.com/network/v10.1.68/connectorpatch)
+
+---
+
+
+
+
+## Protect API - New Endpoints
+
+*Added: 2026-01-24*
+
+### Connector - POST
+
+- **Method:** `GET`
+- **Endpoint:** `requests`
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{id}/*path" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>" \-H "Content-Type: application/json" \-d "{  \"action\": \"AUTHORIZE_GUEST_ACCESS\"}"
+```
+
+**Reference:** [Connector - POST](https://developer.ui.com/protect/v6.2.83/connectorpost)
+
+---
+
+### Connector - GET
+
+- **Method:** `GET`
+- **Endpoint:** `requests`
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{id}/*path" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Connector - GET](https://developer.ui.com/protect/v6.2.83/connectorget)
+
+---
+
+### Connector - PUT
+
+- **Method:** `GET`
+- **Endpoint:** `requests`
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X PUT "https://api.ui.com/v1/connector/consoles/{id}/*path" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>" \-H "Content-Type: application/json" \-d "{  \"name\": \"Updated Firewall Zone\"}"
+```
+
+**Reference:** [Connector - PUT](https://developer.ui.com/protect/v6.2.83/connectorput)
+
+---
+
+### Connector - DELETE
+
+- **Method:** `GET`
+- **Endpoint:** `requests`
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X DELETE "https://api.ui.com/v1/connector/consoles/{id}/*path" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Connector - DELETE](https://developer.ui.com/protect/v6.2.83/connectordelete)
+
+---
+
+### Connector - PATCH
+
+- **Method:** `GET`
+- **Endpoint:** `requests`
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X PATCH "https://api.ui.com/v1/connector/consoles/{id}/*path" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>" \-H "Content-Type: application/json" \-d "{  \"name\": \"Updated Viewer Name\"}"
+```
+
+**Reference:** [Connector - PATCH](https://developer.ui.com/protect/v6.2.83/connectorpatch)
+
+---
+
+### Query ISP Metrics
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/isp-metrics/{type}/query" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>" \-H "Content-Type: application/json" \-d "{  \"sites\": [    {      \"beginTimestamp\": \"2024-06-30T13:35:00Z\",      \"hostId\": \"900A6F00301100000000074A6BA90000000007A3387E0000000063EC9853:123456789\",      \"endTimestamp\": \"2024-06-30T15:35:00Z\",      \"siteId\": \"661900ae6aec8f548d49fd54\"    }  ]}"
+```
+
+**Reference:** [Query ISP Metrics](https://developer.ui.com/site-manager/v1.0.0/queryispmetrics)
+
+---
+
+### List SD-WAN Configs
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L "https://api.ui.com/v1/sd-wan-configs" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [List SD-WAN Configs](https://developer.ui.com/site-manager/v1.0.0/listsdwanconfigs)
+
+---
+
+### Get SD-WAN Config by ID
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/sd-wan-configs/{id}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get SD-WAN Config by ID](https://developer.ui.com/site-manager/v1.0.0/getsdwanconfigbyid)
+
+---
+
+### Get SD-WAN Config Status
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/sd-wan-configs/{id}/status" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get SD-WAN Config Status](https://developer.ui.com/site-manager/v1.0.0/getsdwanconfigstatus)
+
+---
+
+### Adopt Devices
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/network/integration/v1/sites/{siteId}/devices" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>" \-H "Content-Type: application/json" \-d "{  \"macAddress\": \"string\",  \"ignoreDeviceLimit\": true}"
+```
+
+**Reference:** [Adopt Devices](https://developer.ui.com/network/v10.1.68/adoptdevice)
+
+---
+
+### List DPI Application Categories
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/network/integration/v1/dpi/categories?offset={offset}&limit={limit}&filter={filter}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [List DPI Application Categories](https://developer.ui.com/network/v10.1.68/getdpiapplicationcategories)
+
+---
+
+### Quick Start
+
+- **Method:** `GET`
+- **Endpoint:** `register`
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+pip install httpx urllib3
+```
+
+**Reference:** [Quick Start](https://developer.ui.com/network/v10.1.68/quick_start)
+
+---
+
+### Get application information
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/meta/info" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get application information](https://developer.ui.com/protect/v6.2.83/get-v1metainfo)
+
+---
+
+### Get viewer details
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/viewers/{id}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get viewer details](https://developer.ui.com/protect/v6.2.83/get-v1viewersid)
+
+---
+
+### Patch viewer settings
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X PATCH "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/viewers/{id}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>" \-H "Content-Type: application/json" \-d "{  \"name\": \"string\",  \"liveview\": \"string\"}"
+```
+
+**Reference:** [Patch viewer settings](https://developer.ui.com/protect/v6.2.83/patch-v1viewersid)
+
+---
+
+### Get all viewers
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/viewers" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get all viewers](https://developer.ui.com/protect/v6.2.83/get-v1viewers)
+
+---
+
+### Get live view details
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/liveviews/{id}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get live view details](https://developer.ui.com/protect/v6.2.83/get-v1liveviewsid)
+
+---
+
+### Patch live view configuration
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X PATCH "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/liveviews/{id}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>" \-H "Content-Type: application/json" \-d "{  \"id\": \"string\",  \"modelKey\": \"string\",  \"name\": \"string\",  \"isDefault\": true,  \"isGlobal\": true,  \"owner\": \"string\",  \"layout\": 0,  \"slots\": [    {      \"cameras\": [        \"string\"      ],      \"cycleMode\": \"motion\",      \"cycleInterval\": 0    }  ]}"
+```
+
+**Reference:** [Patch live view configuration](https://developer.ui.com/protect/v6.2.83/patch-v1liveviewsid)
+
+---
+
+### Get all live views
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/liveviews" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get all live views](https://developer.ui.com/protect/v6.2.83/get-v1liveviews)
+
+---
+
+### Create live view
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/liveviews" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>" \-H "Content-Type: application/json" \-d "{  \"id\": \"string\",  \"modelKey\": \"string\",  \"name\": \"string\",  \"isDefault\": true,  \"isGlobal\": true,  \"owner\": \"string\",  \"layout\": 0,  \"slots\": [    {      \"cameras\": [        \"string\"      ],      \"cycleMode\": \"motion\",      \"cycleInterval\": 0    }  ]}"
+```
+
+**Reference:** [Create live view](https://developer.ui.com/protect/v6.2.83/post-v1liveviews)
+
+---
+
+### Get update messages about devices
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/subscribe/devices" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get update messages about devices](https://developer.ui.com/protect/v6.2.83/get-v1subscribedevices)
+
+---
+
+### Get Protect event messages
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/subscribe/events" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get Protect event messages](https://developer.ui.com/protect/v6.2.83/get-v1subscribeevents)
+
+---
+
+### Start a camera PTZ patrol
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X POST "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/cameras/{id}/ptz/patrol/start/{slot}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Start a camera PTZ patrol](https://developer.ui.com/protect/v6.2.83/post-v1camerasidptzpatrolstartslot)
+
+---
+
+### Stop active camera PTZ patrol
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X POST "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/cameras/{id}/ptz/patrol/stop" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Stop active camera PTZ patrol](https://developer.ui.com/protect/v6.2.83/post-v1camerasidptzpatrolstop)
+
+---
+
+### Move PTZ camera to preset
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X POST "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/cameras/{id}/ptz/goto/{slot}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Move PTZ camera to preset](https://developer.ui.com/protect/v6.2.83/post-v1camerasidptzgotoslot)
+
+---
+
+### Send a webhook to the alarm manager
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X POST "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/alarm-manager/webhook/{id}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Send a webhook to the alarm manager](https://developer.ui.com/protect/v6.2.83/post-v1alarm-managerwebhookid)
+
+---
+
+### Get light details
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/lights/{id}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get light details](https://developer.ui.com/protect/v6.2.83/get-v1lightsid)
+
+---
+
+### Patch light settings
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X PATCH "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/lights/{id}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>" \-H "Content-Type: application/json" \-d "{  \"name\": \"string\",  \"isLightForceEnabled\": true,  \"lightModeSettings\": {    \"mode\": \"string\",    \"enableAt\": \"string\"  },  \"lightDeviceSettings\": {    \"isIndicatorEnabled\": true,    \"pirDuration\": 0,    \"pirSensitivity\": 0,    \"ledLevel\": 0  }}"
+```
+
+**Reference:** [Patch light settings](https://developer.ui.com/protect/v6.2.83/patch-v1lightsid)
+
+---
+
+### Get all lights
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/lights" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get all lights](https://developer.ui.com/protect/v6.2.83/get-v1lights)
+
+---
+
+### Get camera details
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/cameras/{id}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get camera details](https://developer.ui.com/protect/v6.2.83/get-v1camerasid)
+
+---
+
+### Patch camera settings
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X PATCH "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/cameras/{id}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>" \-H "Content-Type: application/json" \-d "{  \"name\": \"string\",  \"osdSettings\": {    \"isNameEnabled\": true,    \"isDateEnabled\": true,    \"isLogoEnabled\": true,    \"isDebugEnabled\": true,    \"overlayLocation\": \"topLeft\"  },  \"ledSettings\": {    \"isEnabled\": true,    \"welcomeLed\": true,    \"floodLed\": true  },  \"lcdMessage\": {    \"type\": \"string\"  },  \"videoMode\": \"default\",  \"smartDetectSettings\": {    \"objectTypes\": [      \"person\"    ],    \"audioTypes\": [      \"alrmSmoke\"    ]  }}"
+```
+
+**Reference:** [Patch camera settings](https://developer.ui.com/protect/v6.2.83/patch-v1camerasid)
+
+---
+
+### Get all cameras
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/cameras" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get all cameras](https://developer.ui.com/protect/v6.2.83/get-v1cameras)
+
+---
+
+### Create RTSPS streams for camera
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/cameras/{id}/rtsps-stream" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>" \-H "Content-Type: application/json" \-d "{  \"qualities\": [    \"high\"  ]}"
+```
+
+**Reference:** [Create RTSPS streams for camera](https://developer.ui.com/protect/v6.2.83/post-v1camerasidrtsps-stream)
+
+---
+
+### Delete camera RTSPS stream
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X DELETE "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/cameras/{id}/rtsps-stream?qualities={qualities}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Delete camera RTSPS stream](https://developer.ui.com/protect/v6.2.83/delete-v1camerasidrtsps-stream)
+
+---
+
+### Get RTSPS streams for camera
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/cameras/{id}/rtsps-stream" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get RTSPS streams for camera](https://developer.ui.com/protect/v6.2.83/get-v1camerasidrtsps-stream)
+
+---
+
+### Get camera snapshot
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/cameras/{id}/snapshot?highQuality={highQuality}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get camera snapshot](https://developer.ui.com/protect/v6.2.83/get-v1camerasidsnapshot)
+
+---
+
+### Permanently disable camera microphone
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X POST "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/cameras/{id}/disable-mic-permanently" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Permanently disable camera microphone](https://developer.ui.com/protect/v6.2.83/post-v1camerasiddisable-mic-permanently)
+
+---
+
+### Create talkback session for camera
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X POST "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/cameras/{id}/talkback-session" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Create talkback session for camera](https://developer.ui.com/protect/v6.2.83/post-v1camerasidtalkback-session)
+
+---
+
+### Get sensor details
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/sensors/{id}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get sensor details](https://developer.ui.com/protect/v6.2.83/get-v1sensorsid)
+
+---
+
+### Patch sensor settings
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X PATCH "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/sensors/{id}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>" \-H "Content-Type: application/json" \-d "{  \"name\": \"string\",  \"lightSettings\": {    \"isEnabled\": true,    \"margin\": 0  },  \"humiditySettings\": {    \"isEnabled\": true,    \"margin\": 0  },  \"temperatureSettings\": {    \"isEnabled\": true,    \"margin\": 0  },  \"motionSettings\": {    \"isEnabled\": true,    \"sensitivity\": 0  },  \"alarmSettings\": {    \"isEnabled\": true  }}"
+```
+
+**Reference:** [Patch sensor settings](https://developer.ui.com/protect/v6.2.83/patch-v1sensorsid)
+
+---
+
+### Get all sensors
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/sensors" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get all sensors](https://developer.ui.com/protect/v6.2.83/get-v1sensors)
+
+---
+
+### Get NVR details
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/nvrs" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get NVR details](https://developer.ui.com/protect/v6.2.83/get-v1nvrs)
+
+---
+
+### Upload device asset file
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X POST "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/files/{fileType}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Upload device asset file](https://developer.ui.com/protect/v6.2.83/post-v1filesfiletype)
+
+---
+
+### Get device asset files
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/files/{fileType}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get device asset files](https://developer.ui.com/protect/v6.2.83/get-v1filesfiletype)
+
+---
+
+### Get chime details
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/chimes/{id}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get chime details](https://developer.ui.com/protect/v6.2.83/get-v1chimesid)
+
+---
+
+### Patch chime settings
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g -X PATCH "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/chimes/{id}" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>" \-H "Content-Type: application/json" \-d "{  \"name\": \"string\",  \"cameraIds\": [    \"string\"  ],  \"ringSettings\": [    {      \"cameraId\": \"string\",      \"repeatTimes\": 0,      \"ringtoneId\": \"string\",      \"volume\": 0    }  ]}"
+```
+
+**Reference:** [Patch chime settings](https://developer.ui.com/protect/v6.2.83/patch-v1chimesid)
+
+---
+
+### Get all chimes
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+curl -L -g "https://api.ui.com/v1/connector/consoles/{consoleId}/proxy/protect/integration/v1/chimes" \-H "Accept: application/json" \-H "X-API-Key: <X-API-Key>"
+```
+
+**Reference:** [Get all chimes](https://developer.ui.com/protect/v6.2.83/get-v1chimes)
+
+---
+
+### Quick Start
+
+- **Method:** `GET`
+- **Endpoint:** `register`
+
+Endpoints combined into Ansible Modules for customized workflows.
+
+**Example:**
+```json
+pip install httpx urllib3
+```
+
+**Reference:** [Quick Start](https://developer.ui.com/protect/v6.2.83/quick_start)
+
+---
+
