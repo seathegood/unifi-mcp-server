@@ -8,6 +8,7 @@ from ..models import Client
 from ..utils import (
     ResourceNotFoundError,
     get_logger,
+    sanitize_log_message,
     validate_limit_offset,
     validate_mac_address,
     validate_site_id,
@@ -42,7 +43,7 @@ async def get_client_details(site_id: str, client_mac: str, settings: Settings) 
         for client_data in clients_data:
             if validate_mac_address(client_data.get("mac", "")) == client_mac:
                 client_obj = Client(**client_data)
-                logger.info(f"Retrieved client details for {client_mac}")
+                logger.info(sanitize_log_message(f"Retrieved client details for {client_mac}"))
                 return client_obj.model_dump()  # type: ignore[no-any-return]
 
         # If not found in active, try all users
@@ -52,7 +53,7 @@ async def get_client_details(site_id: str, client_mac: str, settings: Settings) 
         for client_data in clients_data:
             if validate_mac_address(client_data.get("mac", "")) == client_mac:
                 client_obj = Client(**client_data)
-                logger.info(f"Retrieved client details for {client_mac}")
+                logger.info(sanitize_log_message(f"Retrieved client details for {client_mac}"))
                 return client_obj.model_dump()  # type: ignore[no-any-return]
 
         raise ResourceNotFoundError("client", client_mac)
@@ -102,7 +103,7 @@ async def get_client_statistics(
                     "uptime": client_data.get("uptime", 0),
                     "is_wired": client_data.get("is_wired", False),
                 }
-                logger.info(f"Retrieved statistics for client {client_mac}")
+                logger.info(sanitize_log_message(f"Retrieved statistics for client {client_mac}"))
                 return stats
 
         raise ResourceNotFoundError("client", client_mac)
@@ -141,7 +142,9 @@ async def list_active_clients(
         # Parse into Client models
         clients = [Client(**c).model_dump() for c in paginated]
 
-        logger.info(f"Retrieved {len(clients)} active clients for site '{site_id}'")
+        logger.info(
+            sanitize_log_message(f"Retrieved {len(clients)} active clients for site '{site_id}'")
+        )
         return clients
 
 
@@ -192,5 +195,9 @@ async def search_clients(
         # Parse into Client models
         clients = [Client(**c).model_dump() for c in paginated]
 
-        logger.info(f"Found {len(clients)} clients matching '{query}' in site '{site_id}'")
+        logger.info(
+            sanitize_log_message(
+                f"Found {len(clients)} clients matching '{query}' in site '{site_id}'"
+            )
+        )
         return clients
