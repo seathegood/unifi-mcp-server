@@ -470,27 +470,7 @@ curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.enu
 
 ### Release Process
 
-The project uses automated releases via GitHub Actions:
-
-1. **Tag the Release:**
-   ```bash
-   git tag -a v0.2.0 -m "Release v0.2.0"
-   git push origin v0.2.0
-   ```
-
-2. **GitHub Actions Automatically:**
-   - Runs full test suite
-   - Builds multi-arch Docker images
-   - Pushes to GitHub Container Registry
-   - Creates GitHub release with artifacts
-   - Generates changelog
-
-3. **Manual Steps:**
-   - Publish to PyPI (if trusted publisher not configured)
-   - Publish npm metadata package
-   - Submit to MCP registry
-
-See [RELEASE_COMPLETION_GUIDE.md](RELEASE_COMPLETION_GUIDE.md) for detailed release procedures.
+See [docs/RELEASE_PROCESS.md](docs/RELEASE_PROCESS.md) for the complete release workflow, including automated GitHub Actions, manual PyPI/npm publishing, and MCP registry submission.
 
 ### Configuration
 
@@ -612,6 +592,112 @@ Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/
 ```
 
 **Important**: Do NOT use `-d` (detached mode) in MCP client configurations. The MCP client needs to maintain a persistent stdin/stdout connection to the container.
+
+### With Cursor
+
+Add to your Cursor MCP configuration (`mcp.json` via "View: Open MCP Settings → New MCP Server"):
+
+#### Option 1: Using Docker (Recommended)
+
+```json
+{
+  "mcpServers": {
+    "unifi-mcp": {
+      "command": "docker",
+      "args": [
+        "run", "--rm", "-i",
+        "--name", "unifi-mcp-server",
+        "-e", "UNIFI_API_KEY=your_unifi_api_key_here",
+        "-e", "UNIFI_API_TYPE=local",
+        "-e", "UNIFI_LOCAL_HOST=192.168.1.1",
+        "-e", "UNIFI_LOCAL_VERIFY_SSL=false",
+        "ghcr.io/enuno/unifi-mcp-server:latest"
+      ],
+      "disabled": false
+    }
+  }
+}
+```
+
+#### Option 2: Using uv
+
+```json
+{
+  "mcpServers": {
+    "unifi-mcp": {
+      "command": "uv",
+      "args": [
+        "--directory", "/path/to/unifi-mcp-server",
+        "run", "mcp", "run", "src/main.py"
+      ],
+      "env": {
+        "UNIFI_API_KEY": "your-api-key-here",
+        "UNIFI_API_TYPE": "local",
+        "UNIFI_LOCAL_HOST": "192.168.1.1"
+      },
+      "disabled": false
+    }
+  }
+}
+```
+
+**Configuration Notes:**
+- Replace `UNIFI_API_KEY` with your actual UniFi API key
+- For local gateway access, set `UNIFI_API_TYPE=local` and provide `UNIFI_LOCAL_HOST`
+- For cloud API access, use `UNIFI_API_TYPE=cloud-v1` or `cloud-ea`
+- After saving, restart Cursor to activate the server
+- Invoke tools in the Chat sidebar (e.g., "List my UniFi devices")
+
+### With Other MCP Clients
+
+The UniFi MCP Server works with any MCP-compatible client. Here are generic configuration patterns:
+
+#### Using npx (for clients that support it)
+
+```json
+{
+  "mcpServers": {
+    "unifi": {
+      "command": "npx",
+      "args": ["-y", "unifi-mcp-server"],
+      "env": {
+        "UNIFI_API_KEY": "your-api-key-here",
+        "UNIFI_API_TYPE": "local",
+        "UNIFI_LOCAL_HOST": "192.168.1.1"
+      }
+    }
+  }
+}
+```
+
+#### Using Python directly
+
+```json
+{
+  "mcpServers": {
+    "unifi": {
+      "command": "python",
+      "args": ["-m", "unifi_mcp_server"],
+      "env": {
+        "UNIFI_API_KEY": "your-api-key-here",
+        "UNIFI_API_TYPE": "local",
+        "UNIFI_LOCAL_HOST": "192.168.1.1"
+      }
+    }
+  }
+}
+```
+
+**Environment Variables (All Clients):**
+- `UNIFI_API_KEY` (required): Your UniFi API key from unifi.ui.com
+- `UNIFI_API_TYPE` (required): `local`, `cloud-v1`, or `cloud-ea`
+- **For Local Gateway API**:
+  - `UNIFI_LOCAL_HOST`: Gateway IP (e.g., 192.168.1.1)
+  - `UNIFI_LOCAL_PORT`: Gateway port (default: 443)
+  - `UNIFI_LOCAL_VERIFY_SSL`: SSL verification (default: false)
+- **For Cloud APIs**:
+  - `UNIFI_CLOUD_API_URL`: Cloud API URL (default: https://api.ui.com)
+  - `UNIFI_DEFAULT_SITE`: Default site ID (default: default)
 
 ### Programmatic Usage
 

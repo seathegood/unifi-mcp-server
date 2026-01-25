@@ -1,3 +1,0 @@
-[submodule "docs/claude"]
-	path = docs/claude
-	url = https://github.com/enuno/claude-command-and-control.git

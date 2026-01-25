@@ -1,52 +1,125 @@
-Import command and agent standards from docs/claude/
-feat: implement comprehensive UniFi MCP command and agent system
-Add complete custom command and agent infrastructure for UniFi MCP Server
-development with multi-agent orchestration, quality gates, and automation.
+# UniFi MCP Server - Claude Instructions
 
-## Phase 1: Upgraded Existing Commands (10 files)
-- Enhanced all existing slash commands with full YAML frontmatter
-- Added explicit tool permissions (allowed-tools) for security
-- Added author and version fields following docs/claude/ standards
-- Upgraded: build-docker, check-deps, clean, docs, format, lint, pr, security, setup, test
+This file provides project-specific instructions for AI coding assistants working on the UniFi MCP Server.
 
-## Phase 2: New UniFi-Specific Commands (5 files)
-Created specialized commands with unifi-mcp- prefix:
-- unifi-mcp-add-tool: Scaffold new MCP tools (model + function + tests + docs)
-- unifi-mcp-test-coverage: Analyze coverage gaps and reach 80% target
-- unifi-mcp-update-docs: Auto-generate API.md from tool docstrings
-- unifi-mcp-release-prep: Comprehensive release preparation workflow
-- unifi-mcp-inspect: Start MCP Inspector for interactive testing
+## Project Overview
 
-## Phase 3: Specialized Agents (4 files)
-Built multi-agent system in .claude/agents/:
-- unifi-tool-developer: MCP tool development specialist (TDD, async, 80% coverage)
-- unifi-test-coverage: Systematic coverage improvement following TESTING_PLAN.md
-- unifi-documentation: Documentation maintenance and auto-generation
-- unifi-release-manager: Multi-agent orchestrator for release coordination
+The UniFi MCP Server is a Model Context Protocol (MCP) server that exposes the UniFi Network Controller API, enabling AI agents and applications to interact with UniFi network infrastructure in a standardized way.
 
-## Phase 4: Multi-Agent Coordination (1 file)
-- MULTI_AGENT_PLAN.md: Complete coordination framework
-  - Workflow templates (release, coverage, tool development)
-  - Communication protocols (status updates, handoffs, quality gates)
-  - Coordination patterns (parallel gathering, sequential resolution)
-  - Progress tracking and metrics
+**Current Version**: v0.2.0
+**Python Version**: 3.10+
+**Framework**: FastMCP
 
-## Phase 5: Project Instructions (1 file)
-- CLAUDE.md: Import directive for docs/claude/ standards
+## Quick Start for AI Assistants
 
-## Key Features
-- Security-first design with explicit tool permissions
-- 80% minimum test coverage enforcement
-- Multi-agent orchestration (parallel + sequential)
-- Auto-documentation generation from code
-- TDD workflow with comprehensive testing
-- Release automation with quality gates
-- Comprehensive examples and templates
+### Before Starting Work
 
-## Files
-- New: 12 files (5 commands + 4 agents + 2 docs + 1 directory)
-- Modified: 10 command files (YAML frontmatter upgrades)
+1. **Read Key Documentation**:
+   - `README.md` - Project overview and features
+   - `AGENTS.md` - Universal AI agent guidelines
+   - `DEVELOPMENT_PLAN.md` - Roadmap and priorities
+   - `TODO.md` - Current tasks and phase breakdown
+   - `API.md` - Complete MCP tool documentation
 
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
+2. **Understand the Architecture**:
+   - `src/main.py` - MCP server entry point
+   - `src/api/` - UniFi API client
+   - `src/models/` - Pydantic data models
+   - `src/tools/` - MCP tool implementations
+   - `tests/unit/` - Unit tests (990 tests, 78.18% coverage)
 
-Co-Authored-By: Claude <noreply@anthropic.com>
+### Development Workflow
+
+1. **Feature Development**:
+   - Create feature branch: `git checkout -b feature/your-feature`
+   - Follow TDD: Write tests first, then implementation
+   - Maintain 80% minimum test coverage for new code
+   - Use Pydantic models for all data structures
+   - Add comprehensive docstrings (Google style)
+
+2. **Code Quality**:
+   - Run tests: `pytest tests/unit/`
+   - Format: `black src/ tests/` and `isort src/ tests/`
+   - Lint: `ruff check src/ tests/ --fix`
+   - Type check: `mypy src/`
+   - Pre-commit: `pre-commit run --all-files`
+
+3. **Safety Mechanisms**:
+   - All mutating operations require `confirm=True`
+   - Implement dry-run mode for preview
+   - Add audit logging for operations
+   - Validate all user inputs
+   - Never commit secrets or credentials
+
+### Technology Stack
+
+- **Language**: Python 3.10+
+- **Framework**: FastMCP (MCP server framework)
+- **API Client**: httpx (async HTTP)
+- **Data Validation**: Pydantic v2
+- **Testing**: pytest with asyncio support
+- **Caching**: Redis (optional)
+- **Monitoring**: agnost.ai (optional)
+
+### API Modes
+
+The server supports three UniFi API access modes:
+
+1. **Local Gateway API** (Recommended): Full feature support
+   - `UNIFI_API_TYPE=local`
+   - `UNIFI_LOCAL_HOST=192.168.1.1`
+
+2. **Cloud V1 API**: Stable, aggregate statistics only
+   - `UNIFI_API_TYPE=cloud-v1`
+
+3. **Cloud EA API**: Early Access, aggregate statistics only
+   - `UNIFI_API_TYPE=cloud-ea`
+
+### Current Development Focus
+
+**Version 0.2.0** (100% Complete ✅):
+- ✅ Zone-Based Firewall (7 working tools)
+- ✅ Traffic Flow Monitoring (15 tools)
+- ✅ Advanced QoS (11 tools)
+- ✅ Backup & Restore (8 tools)
+- ✅ Multi-Site Aggregation (4 tools)
+- ✅ ACL & Traffic Filtering (7 tools)
+- ✅ Site Management (9 tools)
+- ✅ RADIUS & Guest Portal (6 tools)
+- ✅ Network Topology (5 tools)
+
+**Total**: 74 MCP tools, 990 tests passing, 78.18% coverage
+
+### Important Constraints
+
+1. **UniFi Network 9.0+ Required**: Some features require Network 9.0+
+2. **Local API Recommended**: Cloud APIs have limited functionality
+3. **Endpoint Verification**: Some documented API endpoints may not exist in all versions
+4. **Testing**: Integration tests require real UniFi hardware
+
+### Getting Help
+
+- **Issues**: [GitHub Issues](https://github.com/enuno/unifi-mcp-server/issues)
+- **Documentation**: See `API.md` for complete tool reference
+- **Examples**: Check `docs/examples/` for AI assistant prompts
+
+## Key Principles
+
+1. **Safety First**: Never perform destructive operations without confirmation
+2. **Quality Over Speed**: Maintain high test coverage and code quality
+3. **Clarity**: Write self-documenting code with clear docstrings
+4. **Consistency**: Follow existing patterns and conventions
+5. **Security**: Never commit credentials, validate all inputs
+
+## Additional Resources
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guidelines
+- [SECURITY.md](SECURITY.md) - Security policy and best practices
+- [AGENTS.md](AGENTS.md) - Detailed AI agent guidelines
+- [TESTING_PLAN.md](TESTING_PLAN.md) - Testing strategy
+- [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) - Complete roadmap
+
+---
+
+**Last Updated**: 2026-01-25
+**Maintained By**: Development Team

@@ -10,10 +10,11 @@ alwaysApply: false
 
 You are an expert Python developer working on a production-grade MCP (Model Context Protocol) server for UniFi Network Controller integration. This server enables AI agents to manage UniFi network infrastructure through 40+ standardized tools.
 
-## Claude Command & Agent Standards
+## AI Assistant Guidelines
 
-- Claude-specific guidance lives in `docs/claude/` (referenced via the root `CLAUDE.md`). When building or modifying AI commands, agent configs, or orchestration assets, load the relevant manuals (`docs/claude/01-*.md`) and templates before editing.
-- Keep Cursor rule updates synchronized with any changes inside `docs/claude/` so Claude- and Cursor-based assistants share identical expectations for workflows, safety, and tool permissions.
+- Project-specific guidance for AI coding assistants is in `CLAUDE.md` and `AGENTS.md`
+- Follow the development workflow and coding standards documented in these files
+- Maintain consistency across all AI-assisted development
 
 ## Technology Stack
 
