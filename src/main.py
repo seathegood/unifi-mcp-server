@@ -1850,6 +1850,24 @@ async def list_vantage_points() -> list[dict]:
     return await site_manager_tools.list_vantage_points(settings)
 
 
+@mcp.tool()
+async def get_site_inventory(site_id: str | None = None) -> dict:
+    """Get comprehensive inventory for a site or all sites."""
+    return await site_manager_tools.get_site_inventory(settings, site_id)  # type: ignore[return-value]
+
+
+@mcp.tool()
+async def compare_site_performance() -> dict:
+    """Compare performance metrics across all sites."""
+    return await site_manager_tools.compare_site_performance(settings)
+
+
+@mcp.tool()
+async def search_across_sites(query: str, search_type: str = "all") -> dict:
+    """Search for resources across all sites (device/client/network)."""
+    return await site_manager_tools.search_across_sites(settings, query, search_type)
+
+
 # Additional MCP Resources
 # ⚠️ REMOVED: sites://{site_id}/firewall/matrix resource
 # ZBF matrix endpoint does not exist in UniFi API v10.0.156
