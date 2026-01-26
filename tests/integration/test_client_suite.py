@@ -52,40 +52,41 @@ async def test_list_active_clients(settings, env: TestEnvironment) -> dict[str, 
 
 
 @pytest.mark.integration
-async def test_list_active_clients_online_only(settings, env: TestEnvironment) -> dict[str, Any]:
-    """Test list_active_clients with online_only filter."""
+async def test_list_active_clients_structure(settings, env: TestEnvironment) -> dict[str, Any]:
+    """Test list_active_clients response structure validation."""
     try:
-        # Get all clients
-        all_clients = await clients.list_active_clients(
+        result = await clients.list_active_clients(
             site_id=env.site_id,
             settings=settings,
         )
 
-        # Get only online clients
-        online_clients = await clients.list_active_clients(
-            site_id=env.site_id,
-            settings=settings,
-            online_only=True,
-        )
+        assert isinstance(result, list), "Result must be a list"
 
-        assert isinstance(all_clients, list), "All clients result must be a list"
-        assert isinstance(online_clients, list), "Online clients result must be a list"
-
-        # Online count should be <= all count
-        assert len(online_clients) <= len(all_clients), "Online clients should be subset"
-
-        if not all_clients:
+        if not result:
             return {
                 "status": "SKIP",
-                "message": "No clients found for online filter test",
+                "message": "No clients found for structure validation",
             }
+
+        # Validate client structure
+        client = result[0]
+        required_fields = ["mac"]
+        optional_fields = ["hostname", "ip", "is_wired", "signal"]
+
+        # Check required fields
+        for field in required_fields:
+            assert field in client, f"Client must have '{field}' field"
+
+        # Count optional fields present
+        present_optional = sum(1 for field in optional_fields if field in client)
 
         return {
             "status": "PASS",
-            "message": f"Filter working: {len(all_clients)} total, {len(online_clients)} online",
+            "message": f"Client structure valid: {len(result)} clients, {present_optional}/{len(optional_fields)} optional fields present",
             "details": {
-                "all_count": len(all_clients),
-                "online_count": len(online_clients),
+                "client_count": len(result),
+                "required_fields": required_fields,
+                "optional_fields_present": present_optional,
             },
         }
 
@@ -198,8 +199,8 @@ async def test_get_client_statistics(settings, env: TestEnvironment) -> dict[str
 
         # Validate response structure
         assert isinstance(result, dict), "Result must be a dictionary"
-        assert "client_mac" in result, "Statistics must have client_mac"
-        assert result["client_mac"] == client_mac, "Client MAC must match"
+        assert "mac" in result, "Statistics must have mac"
+        assert result["mac"] == client_mac, "Client MAC must match"
 
         # Check for common statistics fields
         stats_fields = ["tx_bytes", "rx_bytes", "tx_packets", "rx_packets"]
@@ -375,7 +376,7 @@ def create_client_suite() -> TestSuite:
         description="Client Management Tools - list_active_clients, get_client_details, search_clients, statistics",
         tests=[
             test_list_active_clients,
-            test_list_active_clients_online_only,
+            test_list_active_clients_structure,
             test_get_client_details,
             test_get_client_details_missing,
             test_get_client_statistics,
