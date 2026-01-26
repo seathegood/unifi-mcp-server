@@ -42,93 +42,114 @@ async def get_network_topology(
 
         actual_site_id = await client.resolve_site_id(site_id)
 
-        # Fetch topology data from UniFi API
-        endpoint = f"/api/s/{actual_site_id}/stat/topology"
-        response = await client.get(endpoint)
+        # Fetch devices and clients from UniFi Integration API
+        devices_endpoint = client.settings.get_integration_path(f"sites/{actual_site_id}/devices")
+        clients_endpoint = client.settings.get_integration_path(f"sites/{actual_site_id}/clients")
 
-        topology_data = response.get("data", {})
-        device_nodes = topology_data.get("nodes", [])
-        client_nodes = topology_data.get("clients", [])
+        # Fetch all devices and clients (handle pagination)
+        device_nodes = []
+        offset = 0
+        while True:
+            response = await client.get(f"{devices_endpoint}?offset={offset}&limit=100")
+            data = response if isinstance(response, list) else response.get("data", [])
+            if not data:
+                break
+            device_nodes.extend(data)
+            offset += len(data)
+            if len(data) < 100:
+                break
+
+        client_nodes = []
+        offset = 0
+        while True:
+            response = await client.get(f"{clients_endpoint}?offset={offset}&limit=100")
+            data = response if isinstance(response, list) else response.get("data", [])
+            if not data:
+                break
+            client_nodes.extend(data)
+            offset += len(data)
+            if len(data) < 100:
+                break
+
+        # Build MAC to ID mapping for devices
+        mac_to_id = {dev.get("macAddress"): dev.get("id") for dev in device_nodes if dev.get("macAddress")}
 
         # Convert devices to topology nodes
         nodes = []
         connections = []
+        depth_map = {}  # Track network depth for each device
 
-        # Process devices
+        # First pass: Create all device nodes and calculate depth
         for device in device_nodes:
+            device_id = device.get("id", "")
+            uplink_info = device.get("uplink", {})
+            uplink_device_id = uplink_info.get("deviceId")
+
+            # Calculate depth (distance from gateway)
+            if uplink_device_id:
+                parent_depth = depth_map.get(uplink_device_id, 0)
+                depth_map[device_id] = parent_depth + 1
+            else:
+                depth_map[device_id] = 0  # Gateway device
+
             node = TopologyNode(
-                node_id=device.get("_id", ""),
+                node_id=device_id,
                 node_type="device",
                 name=device.get("name"),
-                mac=device.get("mac"),
-                ip=device.get("ip"),
+                mac=device.get("macAddress"),
+                ip=device.get("ipAddress"),
                 model=device.get("model"),
-                type_detail=device.get("type"),
-                uplink_device_id=device.get("uplink", {}).get("device_id"),
-                uplink_port=device.get("uplink", {}).get("port_idx"),
-                uplink_depth=device.get("uplink_depth", 0),
-                state=device.get("state"),
-                adopted=device.get("adopted"),
+                type_detail=device.get("model"),
+                uplink_device_id=uplink_device_id,
+                uplink_port=uplink_info.get("portIndex"),
+                uplink_depth=depth_map.get(device_id, 0),
+                state=1 if device.get("state") == "CONNECTED" else 0,
+                adopted=True,  # All returned devices are adopted
             )
             nodes.append(node)
 
             # Create connection if device has uplink
-            if device.get("uplink"):
-                uplink = device.get("uplink", {})
+            if uplink_device_id:
                 conn = TopologyConnection(
-                    connection_id=f"conn_{device.get('_id')}_uplink",
-                    source_node_id=device.get("_id", ""),
-                    target_node_id=uplink.get("device_id", ""),
+                    connection_id=f"conn_{device_id}_uplink",
+                    source_node_id=device_id,
+                    target_node_id=uplink_device_id,
                     connection_type="uplink",
-                    source_port=uplink.get("port_idx"),
-                    speed_mbps=uplink.get("speed"),
+                    source_port=uplink_info.get("portIndex"),
+                    speed_mbps=uplink_info.get("speedMbps"),
                     is_uplink=True,
-                    status="up" if device.get("state") == 1 else "down",
+                    status="up" if device.get("state") == "CONNECTED" else "down",
                 )
                 connections.append(conn)
 
         # Process clients
         for client_data in client_nodes:
+            client_id = client_data.get("id", "")
+            client_type = client_data.get("type", "WIRED")
+            uplink_device_id = client_data.get("uplinkDeviceId")
+
             node = TopologyNode(
-                node_id=client_data.get("_id", ""),
+                node_id=client_id,
                 node_type="client",
                 name=client_data.get("name"),
-                mac=client_data.get("mac"),
-                ip=client_data.get("ip"),
-                state=1 if client_data.get("is_wired") is not None else 0,
+                mac=client_data.get("macAddress"),
+                ip=client_data.get("ipAddress"),
+                state=1,  # All returned clients are connected
             )
             nodes.append(node)
 
             # Create connection for client
-            is_wired = client_data.get("is_wired", False)
-            if is_wired:
-                target_device = client_data.get("sw_mac", "")
-                conn_type = "wired"
-                target_port = client_data.get("sw_port")
-            else:
-                target_device = client_data.get("ap_mac", "")
-                conn_type = "wireless"
-                target_port = None
-
-            if target_device:
-                # Find target device ID from mac
-                target_id = None
-                for dev in device_nodes:
-                    if dev.get("mac") == target_device:
-                        target_id = dev.get("_id")
-                        break
-
-                if target_id:
-                    conn = TopologyConnection(
-                        connection_id=f"conn_client_{client_data.get('_id')}",
-                        source_node_id=client_data.get("_id", ""),
-                        target_node_id=target_id,
-                        connection_type=conn_type,
-                        target_port=target_port,
-                        is_uplink=False,
-                        status="up",
-                    )
-                    connections.append(conn)
+            if uplink_device_id:
+                conn_type = "wired" if client_type == "WIRED" else "wireless"
+                conn = TopologyConnection(
+                    connection_id=f"conn_client_{client_id}",
+                    source_node_id=client_id,
+                    target_node_id=uplink_device_id,
+                    connection_type=conn_type,
+                    is_uplink=False,
+                    status="up",
+                )
+                connections.append(conn)
 
         # Calculate statistics
         total_devices = len([n for n in nodes if n.node_type == "device"])
