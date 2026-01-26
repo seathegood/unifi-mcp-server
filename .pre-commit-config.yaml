@@ -40,6 +40,7 @@ repos:
       - id: name-tests-test
         name: Check test naming
         args: [--pytest-test-first]
+        exclude: ^tests/integration/run_all_tests\.py$
 
   # Python code formatting with Black
   - repo: https://github.com/psf/black
