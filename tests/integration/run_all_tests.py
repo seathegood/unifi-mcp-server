@@ -38,7 +38,10 @@ from dotenv import load_dotenv
 
 # Import all test suites
 from tests.integration.test_cloud_suite import create_cloud_suite
+from tests.integration.test_client_suite import create_client_suite
+from tests.integration.test_device_suite import create_device_suite
 from tests.integration.test_harness import TestEnvironment, TestHarness
+from tests.integration.test_network_suite import create_network_suite
 from tests.integration.test_topology_suite import create_topology_suite
 
 
@@ -46,21 +49,24 @@ def discover_test_suites():
     """Discover and return all test suites."""
     suites = []
 
-    # Register cloud API suite (basic operations)
-    suites.append(create_cloud_suite())
+    # Week 1: Safe read-only test suites
+    suites.append(create_device_suite())        # Device management (8 tests)
+    suites.append(create_client_suite())        # Client management (8 tests)
+    suites.append(create_network_suite())       # Network configuration (7 tests)
+    suites.append(create_cloud_suite())         # Site management (10 tests)
 
-    # Register topology suite
-    suites.append(create_topology_suite())
+    # Topology suite (existing)
+    suites.append(create_topology_suite())      # Network topology (8 tests)
 
-    # TODO: Add more test suites as they are created
+    # TODO: Week 2-4 test suites (to be added)
     # from tests.integration.test_firewall_suite import create_firewall_suite
     # suites.append(create_firewall_suite())
     #
-    # from tests.integration.test_qos_suite import create_qos_suite
-    # suites.append(create_qos_suite())
+    # from tests.integration.test_port_forwarding_suite import create_port_forwarding_suite
+    # suites.append(create_port_forwarding_suite())
     #
-    # from tests.integration.test_backup_suite import create_backup_suite
-    # suites.append(create_backup_suite())
+    # from tests.integration.test_dpi_suite import create_dpi_suite
+    # suites.append(create_dpi_suite())
 
     return suites
 
