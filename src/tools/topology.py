@@ -71,9 +71,6 @@ async def get_network_topology(
             if len(data) < 100:
                 break
 
-        # Build MAC to ID mapping for devices
-        mac_to_id = {dev.get("macAddress"): dev.get("id") for dev in device_nodes if dev.get("macAddress")}
-
         # Convert devices to topology nodes
         nodes = []
         connections = []

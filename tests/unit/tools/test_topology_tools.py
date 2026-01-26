@@ -96,7 +96,9 @@ class TestGetNetworkTopology:
     """Tests for get_network_topology tool."""
 
     @pytest.mark.asyncio
-    async def test_get_network_topology_success(self, mock_settings, sample_device_data, sample_client_data):
+    async def test_get_network_topology_success(
+        self, mock_settings, sample_device_data, sample_client_data
+    ):
         """Test retrieving complete network topology."""
         from src.tools.topology import get_network_topology
 
@@ -150,7 +152,9 @@ class TestGetNetworkTopology:
             assert len(result["nodes"]) == 0
 
     @pytest.mark.asyncio
-    async def test_get_network_topology_with_coordinates(self, mock_settings, sample_device_data, sample_client_data):
+    async def test_get_network_topology_with_coordinates(
+        self, mock_settings, sample_device_data, sample_client_data
+    ):
         """Test topology retrieval with position coordinates."""
         from src.tools.topology import get_network_topology
 
@@ -222,7 +226,9 @@ class TestGetDeviceConnections:
                     )
 
     @pytest.mark.asyncio
-    async def test_get_device_connections_all_devices(self, mock_settings, sample_device_data, sample_client_data):
+    async def test_get_device_connections_all_devices(
+        self, mock_settings, sample_device_data, sample_client_data
+    ):
         """Test retrieving all device connections."""
         from src.tools.topology import get_device_connections
 
@@ -256,7 +262,9 @@ class TestGetPortMappings:
     """Tests for get_port_mappings tool."""
 
     @pytest.mark.asyncio
-    async def test_get_port_mappings_specific_device(self, mock_settings, sample_device_data, sample_client_data):
+    async def test_get_port_mappings_specific_device(
+        self, mock_settings, sample_device_data, sample_client_data
+    ):
         """Test retrieving port mappings for a specific device."""
         from src.tools.topology import get_port_mappings
 
@@ -292,7 +300,9 @@ class TestExportTopology:
     """Tests for export_topology tool."""
 
     @pytest.mark.asyncio
-    async def test_export_topology_json(self, mock_settings, sample_device_data, sample_client_data):
+    async def test_export_topology_json(
+        self, mock_settings, sample_device_data, sample_client_data
+    ):
         """Test exporting topology as JSON."""
         from src.tools.topology import export_topology
 
@@ -325,7 +335,9 @@ class TestExportTopology:
             assert "nodes" in parsed or "site_id" in parsed
 
     @pytest.mark.asyncio
-    async def test_export_topology_graphml(self, mock_settings, sample_device_data, sample_client_data):
+    async def test_export_topology_graphml(
+        self, mock_settings, sample_device_data, sample_client_data
+    ):
         """Test exporting topology as GraphML."""
         from src.tools.topology import export_topology
 
@@ -394,7 +406,9 @@ class TestGetTopologyStatistics:
     """Tests for get_topology_statistics tool."""
 
     @pytest.mark.asyncio
-    async def test_get_topology_statistics(self, mock_settings, sample_device_data, sample_client_data):
+    async def test_get_topology_statistics(
+        self, mock_settings, sample_device_data, sample_client_data
+    ):
         """Test retrieving topology statistics."""
         from src.tools.topology import get_topology_statistics
 

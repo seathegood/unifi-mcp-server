@@ -30,17 +30,15 @@ import asyncio
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from dotenv import load_dotenv
 
-from tests.integration.test_harness import TestEnvironment, TestHarness
-
 # Import all test suites
 from tests.integration.test_cloud_suite import create_cloud_suite
+from tests.integration.test_harness import TestEnvironment, TestHarness
 from tests.integration.test_topology_suite import create_topology_suite
 
 
@@ -67,7 +65,7 @@ def discover_test_suites():
     return suites
 
 
-def load_test_environments() -> List[TestEnvironment]:
+def load_test_environments() -> list[TestEnvironment]:
     """Load test environments from .env file."""
     # Try to load from integration tests directory first
     integration_env = Path(__file__).parent / ".env"
@@ -91,9 +89,13 @@ def load_test_environments() -> List[TestEnvironment]:
                 api_type="local",
                 api_key=lab_key,
                 local_host=lab_host,
-                local_port=int(os.getenv("UNIFI_LAB_PORT") or os.getenv("UNIFI_LOCAL_PORT") or "443"),
+                local_port=int(
+                    os.getenv("UNIFI_LAB_PORT") or os.getenv("UNIFI_LOCAL_PORT") or "443"
+                ),
                 verify_ssl=(
-                    os.getenv("UNIFI_LAB_VERIFY_SSL") or os.getenv("UNIFI_LOCAL_VERIFY_SSL") or "false"
+                    os.getenv("UNIFI_LAB_VERIFY_SSL")
+                    or os.getenv("UNIFI_LOCAL_VERIFY_SSL")
+                    or "false"
                 ).lower()
                 == "true",
             )
@@ -165,7 +167,7 @@ def load_test_environments() -> List[TestEnvironment]:
     return environments
 
 
-def print_test_plan(harness: TestHarness, suite_filter: Optional[str] = None):
+def print_test_plan(harness: TestHarness, suite_filter: str | None = None):
     """Print what tests will be run (dry-run mode)."""
     print("\n" + "=" * 70)
     print("TEST PLAN (DRY RUN)")
@@ -175,7 +177,7 @@ def print_test_plan(harness: TestHarness, suite_filter: Optional[str] = None):
     for env in harness.environments:
         print(f"  - {env.name} ({env.api_type})")
 
-    print(f"\nTest Suites:")
+    print("\nTest Suites:")
     total_tests = 0
     for suite_name, suite in harness.test_suites.items():
         if suite_filter and suite_name != suite_filter:
@@ -257,7 +259,7 @@ async def main():
 
     # Print header
     print("\n" + "=" * 70)
-    print(f"UniFi MCP Server - Integration Test Run")
+    print("UniFi MCP Server - Integration Test Run")
     print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 70)
 

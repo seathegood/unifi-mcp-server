@@ -6,13 +6,16 @@ Tests all topology-related MCP tools against real UniFi environments.
 """
 
 import json
-from typing import Any, Dict
+from typing import Any
+
+import pytest
 
 from src.tools import topology
-from tests.integration.test_harness import TestEnvironment, TestHarness, TestSuite, test
+from tests.integration.test_harness import TestEnvironment, TestHarness, TestSuite
 
 
-async def test_get_network_topology(settings, env: TestEnvironment) -> Dict[str, Any]:
+@pytest.mark.integration
+async def test_get_network_topology(settings, env: TestEnvironment) -> dict[str, Any]:
     """Test get_network_topology tool."""
     # Skip for cloud APIs - they don't support device/client endpoints
     if env.api_type in ["cloud-v1", "cloud-ea"]:
@@ -54,7 +57,8 @@ async def test_get_network_topology(settings, env: TestEnvironment) -> Dict[str,
         return {"status": "ERROR", "message": f"{type(e).__name__}: {str(e)}"}
 
 
-async def test_export_topology_json(settings, env: TestEnvironment) -> Dict[str, Any]:
+@pytest.mark.integration
+async def test_export_topology_json(settings, env: TestEnvironment) -> dict[str, Any]:
     """Test export_topology tool with JSON format."""
     if env.api_type in ["cloud-v1", "cloud-ea"]:
         return {"status": "SKIP", "message": "Cloud APIs do not support topology endpoints"}
@@ -83,7 +87,8 @@ async def test_export_topology_json(settings, env: TestEnvironment) -> Dict[str,
         return {"status": "ERROR", "message": f"{type(e).__name__}: {str(e)}"}
 
 
-async def test_export_topology_graphml(settings, env: TestEnvironment) -> Dict[str, Any]:
+@pytest.mark.integration
+async def test_export_topology_graphml(settings, env: TestEnvironment) -> dict[str, Any]:
     """Test export_topology tool with GraphML format."""
     if env.api_type in ["cloud-v1", "cloud-ea"]:
         return {"status": "SKIP", "message": "Cloud APIs do not support topology endpoints"}
@@ -112,7 +117,8 @@ async def test_export_topology_graphml(settings, env: TestEnvironment) -> Dict[s
         return {"status": "ERROR", "message": f"{type(e).__name__}: {str(e)}"}
 
 
-async def test_export_topology_dot(settings, env: TestEnvironment) -> Dict[str, Any]:
+@pytest.mark.integration
+async def test_export_topology_dot(settings, env: TestEnvironment) -> dict[str, Any]:
     """Test export_topology tool with DOT format."""
     if env.api_type in ["cloud-v1", "cloud-ea"]:
         return {"status": "SKIP", "message": "Cloud APIs do not support topology endpoints"}
@@ -140,7 +146,8 @@ async def test_export_topology_dot(settings, env: TestEnvironment) -> Dict[str, 
         return {"status": "ERROR", "message": f"{type(e).__name__}: {str(e)}"}
 
 
-async def test_get_topology_statistics(settings, env: TestEnvironment) -> Dict[str, Any]:
+@pytest.mark.integration
+async def test_get_topology_statistics(settings, env: TestEnvironment) -> dict[str, Any]:
     """Test get_topology_statistics tool."""
     if env.api_type in ["cloud-v1", "cloud-ea"]:
         return {"status": "SKIP", "message": "Cloud APIs do not support topology endpoints"}
@@ -169,7 +176,8 @@ async def test_get_topology_statistics(settings, env: TestEnvironment) -> Dict[s
         return {"status": "ERROR", "message": f"{type(e).__name__}: {str(e)}"}
 
 
-async def test_get_device_connections(settings, env: TestEnvironment) -> Dict[str, Any]:
+@pytest.mark.integration
+async def test_get_device_connections(settings, env: TestEnvironment) -> dict[str, Any]:
     """Test get_device_connections tool."""
     if env.api_type in ["cloud-v1", "cloud-ea"]:
         return {"status": "SKIP", "message": "Cloud APIs do not support topology endpoints"}
@@ -205,7 +213,8 @@ async def test_get_device_connections(settings, env: TestEnvironment) -> Dict[st
         return {"status": "ERROR", "message": f"{type(e).__name__}: {str(e)}"}
 
 
-async def test_get_device_connections_all(settings, env: TestEnvironment) -> Dict[str, Any]:
+@pytest.mark.integration
+async def test_get_device_connections_all(settings, env: TestEnvironment) -> dict[str, Any]:
     """Test get_device_connections tool with device_id=None (all devices)."""
     if env.api_type in ["cloud-v1", "cloud-ea"]:
         return {"status": "SKIP", "message": "Cloud APIs do not support topology endpoints"}
@@ -231,7 +240,8 @@ async def test_get_device_connections_all(settings, env: TestEnvironment) -> Dic
         return {"status": "ERROR", "message": f"{type(e).__name__}: {str(e)}"}
 
 
-async def test_get_port_mappings(settings, env: TestEnvironment) -> Dict[str, Any]:
+@pytest.mark.integration
+async def test_get_port_mappings(settings, env: TestEnvironment) -> dict[str, Any]:
     """Test get_port_mappings tool."""
     if env.api_type in ["cloud-v1", "cloud-ea"]:
         return {"status": "SKIP", "message": "Cloud APIs do not support topology endpoints"}
@@ -261,7 +271,7 @@ async def test_get_port_mappings(settings, env: TestEnvironment) -> Dict[str, An
 
         return {
             "status": "PASS",
-            "message": f"Retrieved port mappings for device",
+            "message": "Retrieved port mappings for device",
             "details": {
                 "device_id": device_id[:8] + "...",
                 "mapped_ports": len(result["ports"]),
@@ -323,7 +333,9 @@ if __name__ == "__main__":
         # Export results if requested
         if "--export" in sys.argv:
             idx = sys.argv.index("--export")
-            output_file = Path(sys.argv[idx + 1]) if idx + 1 < len(sys.argv) else Path("test_results.json")
+            output_file = (
+                Path(sys.argv[idx + 1]) if idx + 1 < len(sys.argv) else Path("test_results.json")
+            )
             harness.export_results(output_file)
 
         # Exit with error code if any tests failed

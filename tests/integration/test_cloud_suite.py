@@ -3,12 +3,15 @@
 Tests basic operations that are supported by UniFi Cloud APIs.
 """
 
-from typing import Any, Dict
+from typing import Any
+
+import pytest
 
 from tests.integration.test_harness import TestEnvironment, TestSuite
 
 
-async def test_list_sites(settings, env: TestEnvironment) -> Dict[str, Any]:
+@pytest.mark.integration
+async def test_list_sites(settings, env: TestEnvironment) -> dict[str, Any]:
     """Test listing sites via cloud API."""
     try:
         from src.tools.sites import list_sites
@@ -33,7 +36,8 @@ async def test_list_sites(settings, env: TestEnvironment) -> Dict[str, Any]:
         return {"status": "ERROR", "message": f"{type(e).__name__}: {str(e)}"}
 
 
-async def test_get_site_details_cloud(settings, env: TestEnvironment) -> Dict[str, Any]:
+@pytest.mark.integration
+async def test_get_site_details_cloud(settings, env: TestEnvironment) -> dict[str, Any]:
     """Test retrieving site details."""
     try:
         from src.tools.sites import get_site_details, list_sites
@@ -61,7 +65,8 @@ async def test_get_site_details_cloud(settings, env: TestEnvironment) -> Dict[st
         return {"status": "ERROR", "message": f"{type(e).__name__}: {str(e)}"}
 
 
-async def test_get_site_statistics(settings, env: TestEnvironment) -> Dict[str, Any]:
+@pytest.mark.integration
+async def test_get_site_statistics(settings, env: TestEnvironment) -> dict[str, Any]:
     """Test retrieving site statistics (cloud API)."""
     try:
         from src.tools.sites import get_site_statistics, list_sites
@@ -79,7 +84,7 @@ async def test_get_site_statistics(settings, env: TestEnvironment) -> Dict[str, 
         stat_fields = [
             k
             for k in result.keys()
-            if isinstance(result[k], (int, float)) and k not in ["_id", "id"]
+            if isinstance(result[k], int | float) and k not in ["_id", "id"]
         ]
 
         return {

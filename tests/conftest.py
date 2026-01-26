@@ -19,7 +19,6 @@ def isolate_env_file(tmp_path, monkeypatch):
     since Pydantic Settings loads from both environment variables AND .env file.
     """
     # Change to a temp directory so .env file won't be found
-    original_cwd = os.getcwd()
     temp_dir = tmp_path / "test_env"
     temp_dir.mkdir()
     monkeypatch.chdir(temp_dir)
