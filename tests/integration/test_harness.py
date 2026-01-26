@@ -14,14 +14,13 @@ Features:
 - Extensible test framework for new tools
 """
 
-import asyncio
 import json
-import sys
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 from dotenv import load_dotenv
 
@@ -45,8 +44,8 @@ class TestResult:
     status: TestStatus
     duration_ms: float
     message: str = ""
-    error: Optional[Exception] = None
-    details: Dict[str, Any] = field(default_factory=dict)
+    error: Exception | None = None
+    details: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -56,7 +55,7 @@ class TestEnvironment:
     name: str
     api_type: str  # 'cloud-v1', 'cloud-ea', or 'local'
     api_key: str
-    local_host: Optional[str] = None
+    local_host: str | None = None
     local_port: int = 443
     verify_ssl: bool = False
     site_id: str = "default"
@@ -99,15 +98,15 @@ class TestSuite:
 
     name: str
     description: str
-    tests: List[Callable] = field(default_factory=list)
-    setup: Optional[Callable] = None
-    teardown: Optional[Callable] = None
+    tests: list[Callable] = field(default_factory=list)
+    setup: Callable | None = None
+    teardown: Callable | None = None
 
 
 class TestHarness:
     """Main test harness for running UniFi MCP Server integration tests."""
 
-    def __init__(self, environments: Optional[List[TestEnvironment]] = None):
+    def __init__(self, environments: list[TestEnvironment] | None = None):
         """
         Initialize test harness.
 
@@ -115,11 +114,11 @@ class TestHarness:
             environments: List of test environments (if None, loads from .env)
         """
         self.environments = environments or self._load_environments()
-        self.test_suites: Dict[str, TestSuite] = {}
-        self.results: List[TestResult] = []
+        self.test_suites: dict[str, TestSuite] = {}
+        self.results: list[TestResult] = []
         self.verbose = False
 
-    def _load_environments(self) -> List[TestEnvironment]:
+    def _load_environments(self) -> list[TestEnvironment]:
         """Load test environments from .env file."""
         load_dotenv()
 
@@ -272,8 +271,8 @@ class TestHarness:
     async def run_suite(
         self,
         suite_name: str,
-        environment_filter: Optional[List[str]] = None,
-    ) -> List[TestResult]:
+        environment_filter: list[str] | None = None,
+    ) -> list[TestResult]:
         """
         Run all tests in a suite across specified environments.
 
@@ -330,8 +329,8 @@ class TestHarness:
 
     async def run_all(
         self,
-        environment_filter: Optional[List[str]] = None,
-    ) -> Dict[str, List[TestResult]]:
+        environment_filter: list[str] | None = None,
+    ) -> dict[str, list[TestResult]]:
         """
         Run all registered test suites.
 
@@ -384,7 +383,11 @@ class TestHarness:
         print("TEST SUMMARY")
         print(f"{'=' * 70}")
         print(f"Total Tests:   {total}")
-        print(f"Passed:        {passed} ({passed/total*100:.1f}%)" if total > 0 else "Passed:        0")
+        print(
+            f"Passed:        {passed} ({passed/total*100:.1f}%)"
+            if total > 0
+            else "Passed:        0"
+        )
         print(f"Failed:        {failed}")
         print(f"Errors:        {errors}")
         print(f"Skipped:       {skipped}")
