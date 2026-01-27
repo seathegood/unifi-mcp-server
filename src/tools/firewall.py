@@ -61,6 +61,8 @@ async def create_firewall_rule(
     protocol: str | None = None,
     port: int | None = None,
     enabled: bool = True,
+    ruleset: str = "WAN_IN",
+    rule_index: int = 2000,
     confirm: bool = False,
     dry_run: bool = False,
 ) -> dict[str, Any]:
@@ -76,6 +78,8 @@ async def create_firewall_rule(
         protocol: Protocol (tcp, udp, icmp, all)
         port: Destination port number
         enabled: Enable the rule immediately
+        ruleset: Ruleset to apply rule to (WAN_IN, WAN_OUT, LAN_IN, etc.)
+        rule_index: Position in firewall chain (higher = lower priority)
         confirm: Confirmation flag (must be True to execute)
         dry_run: If True, validate but don't create the rule
 
@@ -101,11 +105,23 @@ async def create_firewall_rule(
         if protocol.lower() not in valid_protocols:
             raise ValueError(f"Invalid protocol '{protocol}'. Must be one of: {valid_protocols}")
 
-    # Build rule data
+    # Build rule data with required defaults
     rule_data = {
         "name": name,
         "action": action.lower(),
         "enabled": enabled,
+        "ruleset": ruleset,
+        "rule_index": rule_index,
+        # Required default fields
+        "setting_preference": "auto",
+        "src_networkconf_type": "NETv4",
+        "dst_networkconf_type": "NETv4",
+        "state_new": False,
+        "state_established": False,
+        "state_invalid": False,
+        "state_related": False,
+        "logging": False,
+        "protocol_match_excepted": False,
     }
 
     if source:

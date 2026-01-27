@@ -165,6 +165,8 @@ async def test_create_and_delete_firewall_rule(settings, env: TestEnvironment) -
             source="192.0.2.0/24",  # TEST-NET-1 (RFC 5737) - test source
             protocol="all",  # Use "all" protocol for simpler rule
             enabled=False,  # Keep disabled for safety
+            ruleset="WAN_LOCAL",  # Use WAN_LOCAL ruleset
+            rule_index=20001,  # Use index range that works with this ruleset
             confirm=True,
         )
 
@@ -245,6 +247,8 @@ async def test_update_firewall_rule(settings, env: TestEnvironment) -> dict[str,
             source="192.0.2.0/24",  # TEST-NET-1
             protocol="all",  # Use "all" protocol
             enabled=False,
+            ruleset="WAN_LOCAL",  # Use WAN_LOCAL ruleset
+            rule_index=20002,  # Use index range that works with this ruleset
             confirm=True,
         )
 
