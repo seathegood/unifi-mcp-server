@@ -913,6 +913,8 @@ pytest -m integration
 - **Total Statements**: 6,105 statements, 4,865 covered
 - **Branch Coverage**: 75.03%
 
+[![Coverage Sunburst](https://codecov.io/github/enuno/unifi-mcp-server/graphs/sunburst.svg?token=ZD314B59CE)](https://codecov.io/github/enuno/unifi-mcp-server)
+
 **By Module Category:**
 
 - **Models**: 98%+ coverage (Excellent)
