@@ -283,7 +283,7 @@ docker pull ghcr.io/enuno/unifi-mcp-server:latest
 docker run -i -d \
   --name unifi-mcp \
   -e UNIFI_API_KEY=your-api-key \
-  -e UNIFI_API_TYPE=cloud \
+  -e UNIFI_API_TYPE=cloud-v1 \
   ghcr.io/enuno/unifi-mcp-server:latest
 
 # OR run with local gateway proxy
@@ -291,7 +291,7 @@ docker run -i -d \
   --name unifi-mcp \
   -e UNIFI_API_KEY=your-api-key \
   -e UNIFI_API_TYPE=local \
-  -e UNIFI_HOST=192.168.1.1 \
+  -e UNIFI_LOCAL_HOST=192.168.1.1 \
   ghcr.io/enuno/unifi-mcp-server:latest
 
 # Check container status

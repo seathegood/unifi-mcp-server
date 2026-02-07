@@ -57,16 +57,25 @@ Configure the MCP server using environment variables:
 | Variable | Description | Required | Default |
 |----------|-------------|----------|---------|
 | `UNIFI_API_KEY` | UniFi API Key from unifi.ui.com | Yes | - |
-| `UNIFI_API_TYPE` | API type: `cloud` or `local` | No | `cloud` |
-| `UNIFI_HOST` | API host (cloud: api.ui.com, local: gateway IP) | No | `api.ui.com` |
-| `UNIFI_PORT` | API port | No | `443` |
-| `UNIFI_VERIFY_SSL` | Verify SSL certificates | No | `true` |
-| `UNIFI_SITE` | Default site ID | No | `default` |
-| `UNIFI_RATE_LIMIT` | Max requests per minute | No | `100` |
-| `UNIFI_TIMEOUT` | Request timeout (seconds) | No | `30` |
+| `UNIFI_API_TYPE` | API type: `cloud-v1`, `cloud-ea`, or `local` | No | `cloud-v1` |
+| `UNIFI_CLOUD_API_URL` | Cloud API base URL | No | `https://api.ui.com` |
+| `UNIFI_LOCAL_HOST` | Local gateway hostname/IP (required for `local`) | No | - |
+| `UNIFI_LOCAL_PORT` | Local gateway port | No | `443` |
+| `UNIFI_LOCAL_VERIFY_SSL` | Verify SSL certificates for local mode | No | `true` |
+| `UNIFI_DEFAULT_SITE` | Default site ID | No | `default` |
+| `UNIFI_SITE_MANAGER_ENABLED` | Enable Site Manager API | No | `false` |
+| `UNIFI_RATE_LIMIT_REQUESTS` | Max requests per window | No | `100` |
+| `UNIFI_RATE_LIMIT_PERIOD` | Rate limit window (seconds) | No | `60` |
+| `UNIFI_REQUEST_TIMEOUT` | Request timeout (seconds) | No | `30` |
 | `UNIFI_MAX_RETRIES` | Maximum retry attempts | No | `3` |
+| `UNIFI_RETRY_BACKOFF_FACTOR` | Exponential backoff factor | No | `2.0` |
+| `UNIFI_CACHE_ENABLED` | Enable response caching | No | `true` |
+| `UNIFI_CACHE_TTL` | Cache TTL (seconds) | No | `300` |
 | `MCP_SERVER_PORT` | MCP server port | No | `3000` |
 | `MCP_LOG_LEVEL` | Logging level | No | `INFO` |
+| `LOG_LEVEL` | Application log level | No | `INFO` |
+| `LOG_API_REQUESTS` | Log API requests | No | `true` |
+| `UNIFI_AUDIT_LOG_ENABLED` | Enable audit logging | No | `true` |
 
 ### Configuration File
 
@@ -75,19 +84,27 @@ Alternatively, use a `config.yaml` file:
 ```yaml
 unifi:
   api_key: your-api-key-here
-  api_type: cloud  # or 'local'
-  host: api.ui.com  # or gateway IP for local
-  port: 443
-  verify_ssl: true
-  site: default
-  rate_limit: 100
-  timeout: 30
+  api_type: cloud-v1  # or cloud-ea/local
+  cloud_api_url: https://api.ui.com
+  local_host: 192.168.1.1  # required for local
+  local_port: 443
+  local_verify_ssl: true
+  default_site: default
+  site_manager_enabled: false
+  rate_limit_requests: 100
+  rate_limit_period: 60
+  request_timeout: 30
   max_retries: 3
+  retry_backoff_factor: 2.0
+  cache_enabled: true
+  cache_ttl: 300
 
 mcp:
   server_port: 3000
   log_level: INFO
 ```
+
+**Legacy env compatibility:** `UNIFI_HOST/PORT/VERIFY_SSL/SITE` and `UNIFI_RATE_LIMIT/UNIFI_TIMEOUT` are still accepted but deprecated; prefer the names listed above. Deprecations will be removed in a future major release.
 
 **Note:** Environment variables take precedence over configuration file settings.
 
@@ -2436,7 +2453,7 @@ The MCP server implements intelligent rate limit handling:
 
 - **Automatic retry** with exponential backoff
 - **Request queuing** to prevent overwhelming the API
-- **Configurable rate limit** via `UNIFI_RATE_LIMIT` environment variable
+- **Configurable rate limit** via `UNIFI_RATE_LIMIT_REQUESTS`/`UNIFI_RATE_LIMIT_PERIOD` (legacy `UNIFI_RATE_LIMIT` still accepted)
 - **Graceful degradation** when limits are reached
 
 ### Best Practices
@@ -2460,7 +2477,9 @@ The MCP server implements intelligent rate limit handling:
 
 ```env
 # Set to match your API version
-UNIFI_RATE_LIMIT=100  # EA: 100, v1 Stable: 10000
+UNIFI_RATE_LIMIT_REQUESTS=100   # EA: 100, v1 Stable: 10000
+UNIFI_RATE_LIMIT_PERIOD=60
+# Legacy (deprecated but accepted): UNIFI_RATE_LIMIT=100
 ```
 
 ## Examples

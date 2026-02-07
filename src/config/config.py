@@ -3,7 +3,7 @@
 from enum import Enum
 from typing import Literal
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import AliasChoices, Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -52,26 +52,26 @@ class Settings(BaseSettings):
     local_host: str | None = Field(
         default=None,
         description="Local UniFi controller hostname/IP",
-        validation_alias="UNIFI_LOCAL_HOST",
+        validation_alias=AliasChoices("UNIFI_LOCAL_HOST", "UNIFI_HOST"),
     )
 
     local_port: int = Field(
         default=443,
         description="Local UniFi controller port",
-        validation_alias="UNIFI_LOCAL_PORT",
+        validation_alias=AliasChoices("UNIFI_LOCAL_PORT", "UNIFI_PORT"),
     )
 
     local_verify_ssl: bool = Field(
         default=True,
         description="Verify SSL certificates for local controller",
-        validation_alias="UNIFI_LOCAL_VERIFY_SSL",
+        validation_alias=AliasChoices("UNIFI_LOCAL_VERIFY_SSL", "UNIFI_VERIFY_SSL"),
     )
 
     # Site Configuration
     default_site: str = Field(
         default="default",
         description="Default site ID to use",
-        validation_alias="UNIFI_DEFAULT_SITE",
+        validation_alias=AliasChoices("UNIFI_DEFAULT_SITE", "UNIFI_SITE"),
     )
 
     # Site Manager API Configuration
@@ -85,7 +85,7 @@ class Settings(BaseSettings):
     rate_limit_requests: int = Field(
         default=100,
         description="Maximum requests per minute (EA tier: 100, v1 tier: 10000)",
-        validation_alias="UNIFI_RATE_LIMIT_REQUESTS",
+        validation_alias=AliasChoices("UNIFI_RATE_LIMIT_REQUESTS", "UNIFI_RATE_LIMIT"),
     )
 
     rate_limit_period: int = Field(
@@ -111,7 +111,7 @@ class Settings(BaseSettings):
     request_timeout: int = Field(
         default=30,
         description="Request timeout in seconds",
-        validation_alias="UNIFI_REQUEST_TIMEOUT",
+        validation_alias=AliasChoices("UNIFI_REQUEST_TIMEOUT", "UNIFI_TIMEOUT"),
     )
 
     # Caching Configuration

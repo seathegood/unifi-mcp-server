@@ -48,43 +48,26 @@ All AI agents must adhere to these fundamental principles:
 
 ## File Structure and Organization
 
-### Project Layout
+### Project Layout (fork baseline)
 
 ```
 unifi-mcp-server/
-├── .github/
-│   └── workflows/          # CI/CD pipeline definitions
+├── .github/                # CI/CD workflows
 ├── src/
 │   ├── __init__.py
-│   ├── main.py            # MCP server entry point
-│   ├── config/            # Configuration management
-│   │   ├── __init__.py
-│   │   ├── settings.py    # Pydantic settings models
-│   │   └── config.yaml    # Default configuration
-│   ├── api/               # UniFi API client
-│   │   ├── __init__.py
-│   │   ├── client.py      # HTTP client wrapper
-│   │   └── endpoints.py   # API endpoint definitions
-│   ├── tools/             # MCP tool definitions
-│   │   ├── __init__.py
-│   │   ├── devices.py     # Device management tools
-│   │   ├── networks.py    # Network configuration tools
-│   │   └── firewall.py    # Firewall rule tools
-│   ├── resources/         # MCP resource definitions
-│   │   ├── __init__.py
-│   │   └── schemas.py     # Resource URI schemas
-│   └── utils/             # Utility functions
-│       ├── __init__.py
-│       └── validators.py  # Input validation helpers
-├── tests/
-│   ├── __init__.py
-│   ├── conftest.py        # Pytest fixtures
-│   ├── unit/              # Unit tests
-│   └── integration/       # Integration tests
-├── docs/                  # Additional documentation
-├── .env.example           # Environment variable template
-├── .gitignore
-├── .aiignore
+│   ├── main.py             # MCP server entry point (Python)
+│   ├── __main__.py         # CLI entry
+│   ├── api/                # UniFi API client + endpoints
+│   ├── config/             # Pydantic settings (config.py)
+│   ├── models/             # Pydantic models
+│   ├── resources/          # MCP resources
+│   ├── tools/              # MCP tools
+│   ├── utils/              # Helpers/validators
+│   └── webhooks/           # Webhook handlers
+├── tests/                  # unit/ + integration/
+├── docs/                   # Project docs
+├── docker-compose.yml      # Container orchestration
+├── .env.example            # Template (no secrets)
 ├── pyproject.toml
 ├── README.md
 └── ...
@@ -193,6 +176,12 @@ unifi-mcp-server/
 - **DON'T** write code without understanding its purpose
 - **DON'T** use deprecated libraries or functions
 - **DON'T** ignore type errors from MyPy
+
+### Forking & Branching
+
+- All work occurs in a fork under seathegood; protect `main`, develop in feature branches, and sync from upstream for security fixes.
+- No direct pushes to `main`; open PRs with AI-assist tag and human review required.
+- Keep CHANGELOG entries fork-specific and document breaking env/contract changes.
 
 ## Testing Requirements
 
@@ -354,7 +343,15 @@ pre-commit install
 detect-secrets scan
 ```
 
-## UniFi API Guidelines
+## Environment & UniFi API Guidelines
+
+### Env Contract (fork)
+
+- Primary variables: `UNIFI_API_KEY`, `UNIFI_API_TYPE` (`cloud-v1`, `cloud-ea`, `local`), `UNIFI_CLOUD_API_URL`, `UNIFI_LOCAL_HOST`, `UNIFI_LOCAL_PORT`, `UNIFI_LOCAL_VERIFY_SSL`, `UNIFI_DEFAULT_SITE`.
+- Reliability knobs: `UNIFI_RATE_LIMIT_REQUESTS`, `UNIFI_RATE_LIMIT_PERIOD`, `UNIFI_MAX_RETRIES`, `UNIFI_RETRY_BACKOFF_FACTOR`, `UNIFI_REQUEST_TIMEOUT`, `UNIFI_CACHE_ENABLED`, `UNIFI_CACHE_TTL`.
+- Logging/audit: `LOG_LEVEL`, `LOG_API_REQUESTS`, `UNIFI_AUDIT_LOG_ENABLED`.
+- Maintain a compatibility note when removing legacy `UNIFI_HOST/PORT/VERIFY_SSL/SITE` in docs or compose; prefer a temporary shim with clear deprecation dates.
+- `.env` must only contain placeholders; store real secrets outside VCS and load via environment or secrets manager.
 
 ### Authentication with API Keys
 
