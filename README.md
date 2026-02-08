@@ -1,168 +1,62 @@
-# <img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/unifi-dark.png" alt="UniFi Dark Logo" width="40" /> UniFi MCP Server
+# <img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/unifi-dark.png" alt="UniFi Dark Logo" width="40" /> UniFi MCP Server (seathegood fork)
 
-[![CI](https://github.com/enuno/unifi-mcp-server/actions/workflows/ci.yml/badge.svg)](https://github.com/enuno/unifi-mcp-server/actions/workflows/ci.yml)
-[![Security](https://github.com/enuno/unifi-mcp-server/actions/workflows/security.yml/badge.svg)](https://github.com/enuno/unifi-mcp-server/actions/workflows/security.yml)
-[![codecov](https://codecov.io/github/enuno/unifi-mcp-server/graph/badge.svg?token=ZD314B59CE)](https://codecov.io/github/enuno/unifi-mcp-server)
-[![PyPI](https://img.shields.io/pypi/v/unifi-mcp-server.svg)](https://pypi.org/project/unifi-mcp-server/)
-[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/enuno/unifi-mcp-server)
+This fork explores MCP development patterns for AI workflows while maintaining a robust UniFi API integration and a container-first delivery model. It is not intended to maintain backward compatibility with the upstream project.
 
-A Model Context Protocol (MCP) server that exposes the UniFi Network Controller API, enabling AI agents and applications to interact with UniFi network infrastructure in a standardized way.
+- Maintained at: `github.com/seathegood/unifi-mcp-server`
+- Upstream reference: `github.com/enuno/unifi-mcp-server` (acknowledged with thanks)
+- License: Apache-2.0 (preserved)
+- Publishing: GHCR (and mirrored to Docker Hub under seathegood); upstream PyPI/npm are not targets for this fork
 
-## 📋 Version Notice
+## What this is
+- A Model Context Protocol (MCP) server and docs for UniFi network automation, tuned for AI agents and automation workflows.
+- A container-first distribution with a harmonized environment contract: `UNIFI_API_TYPE`, `UNIFI_CLOUD_API_URL`, `UNIFI_LOCAL_*`, `UNIFI_RATE_LIMIT_REQUESTS`/`PERIOD`, `UNIFI_REQUEST_TIMEOUT`, caching/logging/audit flags.
+- A foundation for experimenting with MCP tooling patterns and production-ready deployment practices.
 
-**Current Stable Release**: v0.2.1 (2026-01-26) 🎉
+## What this is not
+- Not backward compatible with the upstream release history or legacy env names beyond transitional shims.
+- Not a commitment to publish on upstream registries (PyPI/npm) or to preserve upstream version numbering.
+- Not a drop-in replacement for upstream; capabilities and APIs may diverge.
 
-**Installation:**
+## Current status
+- Pre-release fork bootstrap; first forked release is planned under `seathegood` GHCR/Docker Hub.
+- Legacy release history and coverage claims from upstream are intentionally removed here; see `docs/` for any legacy references.
 
+## Running (container-first)
 ```bash
-pip install unifi-mcp-server
+# pull (replace tag as needed when first forked release is cut)
+docker pull ghcr.io/seathegood/unifi-mcp-server:latest
+
+# run with env contract (example: local gateway)
+docker run -i --rm \
+  -e UNIFI_API_KEY=your-api-key \
+  -e UNIFI_API_TYPE=local \
+  -e UNIFI_LOCAL_HOST=192.168.1.1 \
+  ghcr.io/seathegood/unifi-mcp-server:latest
 ```
 
-**What's New in v0.2.1:**
+For Compose-based deployment with Redis/Toolbox, see `docker-compose.yml` and `.env.example` (contract uses the harmonized env names).
 
-- 🔧 **CI/CD Improvements** - Fixed all CI/CD pipeline failures
-- ✅ **Test Infrastructure** - Proper pytest configuration with integration markers
-- 🧪 **990 Tests Passing** - All unit tests passing across Python 3.10, 3.11, 3.12
-- 🔍 **Integration Tests** - 24 integration tests validated on local APIs
-- 📋 **Code Quality** - Black formatting, Ruff linting, pre-commit hooks all passing
+## Configuration (harmonized)
+- `UNIFI_API_TYPE`: `cloud-v1` | `cloud-ea` | `local`
+- `UNIFI_CLOUD_API_URL`: base URL for cloud APIs
+- `UNIFI_LOCAL_*`: `UNIFI_LOCAL_HOST`, `UNIFI_LOCAL_PORT`, `UNIFI_LOCAL_VERIFY_SSL`
+- `UNIFI_DEFAULT_SITE`, `UNIFI_SITE_MANAGER_ENABLED`
+- Reliability: `UNIFI_RATE_LIMIT_REQUESTS`, `UNIFI_RATE_LIMIT_PERIOD`, `UNIFI_MAX_RETRIES`, `UNIFI_RETRY_BACKOFF_FACTOR`, `UNIFI_REQUEST_TIMEOUT`
+- Cache/Logging/Audit: `UNIFI_CACHE_ENABLED`, `UNIFI_CACHE_TTL`, `LOG_LEVEL`, `LOG_API_REQUESTS`, `UNIFI_AUDIT_LOG_ENABLED`
 
-This is a maintenance release focused on improving the development and testing infrastructure. All 74 MCP tools from v0.2.0 remain unchanged.
+## Roadmap (fork)
+- MCP patterns for AI workflows (promptable automation, robust validation).
+- Container-first hardening (health checks, minimal env surface, secrets hygiene).
+- Documentation refresh aligned to the new contract and deployment model.
+- Maintain UniFi API integration parity while simplifying scope as needed.
 
-**Previous Major Release - v0.2.0 (2026-01-25):**
+## Contributing
+- Branch protections will be enforced on `main`; use PRs with checks.
+- Issues/Discussions: https://github.com/seathegood/unifi-mcp-server
 
-- ✨ **74 MCP Tools** - All 7 feature phases complete
-- 📦 **Published on PyPI** - Easy installation with pip/uv
-- 📊 **QoS Management** - Traffic prioritization and bandwidth control (11 tools)
-- 💾 **Backup & Restore** - Automated scheduling and verification (8 tools)
-- 🌐 **Multi-Site Aggregation** - Cross-site analytics and management (4 tools)
-- 🔒 **ACL & Traffic Filtering** - Advanced traffic control (7 tools)
-- 🏢 **Site Management** - Multi-site provisioning and VPN (9 tools)
-- 🔐 **RADIUS & Guest Portal** - 802.1X authentication (6 tools)
-- 🗺️ **Network Topology** - Complete topology mapping and visualization (5 tools)
-- 🧪 **990 Tests** - 78.18% coverage with comprehensive validation
-- 📖 **30+ Example Prompts** - AI assistant usage examples
-
-See [CHANGELOG.md](CHANGELOG.md) for complete release notes and [VERIFICATION_REPORT.md](VERIFICATION_REPORT.md) for detailed verification.
-
-### Fork note (seathegood)
-- This fork tracks upstream `enuno/unifi-mcp-server` but develops under `seathegood/unifi-mcp-server`; branch protections will be enforced on `main` (PRs + checks, no direct pushes).
-- Environment contract is harmonized on the new names (`UNIFI_API_TYPE`, `UNIFI_CLOUD_API_URL`, `UNIFI_LOCAL_*`, `UNIFI_RATE_LIMIT_REQUESTS`/`PERIOD`, `UNIFI_REQUEST_TIMEOUT`, etc.) with compatibility shims for legacy vars.
-- Documentation has moved to `docs/` (API, contributing, security, plans, reports).
-
-## 🌐 API Mode Support
-
-The UniFi MCP Server supports **three distinct API modes** with different capabilities:
-
-### Local Gateway API (Recommended) ✅
-
-**Full feature support** - Direct access to your UniFi gateway.
-
-- ✅ **All Features Available**: Device management, client control, network configuration, firewall rules, WiFi management
-- ✅ **Real-time Data**: Access to live device/client statistics and detailed information
-- ✅ **Configuration Changes**: Create, update, delete networks, VLANs, firewall rules, SSIDs
-- 📍 **Requirement**: Local network access to your UniFi gateway (e.g., 192.168.1.1)
-- ⚙️ **Configuration**: `UNIFI_API_TYPE=local` + `UNIFI_LOCAL_HOST=<gateway-ip>`
-
-### Cloud Early Access API ⚠️
-
-**Limited to aggregate statistics** - UniFi cloud API in testing phase.
-
-- ✅ **Site Information**: List sites with aggregate statistics (device counts, client counts, bandwidth)
-- ⚠️ **No Individual Device/Client Access**: Cannot query specific devices or clients
-- ⚠️ **No Configuration Changes**: Cannot modify networks, firewall rules, or settings
-- ⚙️ **Configuration**: `UNIFI_API_TYPE=cloud-ea`
-- 📊 **Rate Limit**: 100 requests/minute
-
-### Cloud V1 API ⚠️
-
-**Limited to aggregate statistics** - UniFi stable v1 cloud API.
-
-- ✅ **Site Information**: List sites with aggregate statistics (device counts, client counts, bandwidth)
-- ⚠️ **No Individual Device/Client Access**: Cannot query specific devices or clients
-- ⚠️ **No Configuration Changes**: Cannot modify networks, firewall rules, or settings
-- ⚙️ **Configuration**: `UNIFI_API_TYPE=cloud-v1`
-- 📊 **Rate Limit**: 10,000 requests/minute
-
-**💡 Recommendation**: Use **Local Gateway API** (`UNIFI_API_TYPE=local`) for full functionality. Cloud APIs are suitable only for high-level monitoring dashboards.
-
-## Features
-
-### Core Network Management
-
-- **Device Management**: List, monitor, restart, locate, and upgrade UniFi devices (APs, switches, gateways)
-- **Network Configuration**: Create, update, and delete networks, VLANs, and subnets with DHCP configuration
-- **Client Management**: Query, block, unblock, and reconnect clients with detailed analytics
-- **WiFi/SSID Management**: Create and manage wireless networks with WPA2/WPA3, guest networks, and VLAN isolation
-- **Port Forwarding**: Configure port forwarding rules for external access
-- **DPI Statistics**: Deep Packet Inspection analytics for bandwidth usage by application and category
-- **Multi-Site Support**: Work with multiple UniFi sites seamlessly
-- **Real-time Monitoring**: Access device, network, client, and WiFi statistics
-
-### Security & Firewall (v0.2.0)
-
-- **Firewall Rules**: Create, update, and delete firewall rules with advanced traffic filtering
-- **ACL Management**: Layer 3/4 access control lists with rule ordering and priority
-- **Traffic Matching Lists**: IP, MAC, domain, and port-based traffic classification
-- **Zone-Based Firewall**: Modern zone-based security with zone management and zone-to-zone policies
-- **RADIUS Authentication**: 802.1X authentication with RADIUS server configuration
-- **Guest Portal**: Customizable captive portals with hotspot billing and voucher management
-
-### Quality of Service (v0.2.0)
-
-- **QoS Profiles**: Create and manage QoS profiles for traffic prioritization
-- **Traffic Routes**: Time-based routing with schedules and application awareness
-- **Bandwidth Management**: Upload/download limits with guaranteed minimums
-- **ProAV Mode**: Professional audio/video QoS templates
-- **Reference Profiles**: Built-in QoS templates for common applications
-
-### Backup & Operations (v0.2.0)
-
-- **Automated Backups**: Schedule backups with cron expressions
-- **Backup Management**: Create, download, restore, and delete backups
-- **Cloud Sync Tracking**: Monitor backup cloud synchronization status
-- **Checksum Verification**: Ensure backup integrity with SHA-256 checksums
-- **Multiple Backup Types**: Network configurations and full system backups
-
-### Multi-Site Management (v0.2.0)
-
-- **Site Provisioning**: Create, update, and delete UniFi sites
-- **Site-to-Site VPN**: Configure VPN tunnels between sites
-- **Device Migration**: Move devices between sites seamlessly
-- **Site Health Monitoring**: Track site health scores and metrics
-- **Cross-Site Analytics**: Aggregate device and client statistics across locations
-- **Configuration Export**: Export site configurations for backup/documentation
-
-### Network Topology (v0.2.0)
-
-- **Topology Discovery**: Complete network graph with devices and clients
-- **Connection Mapping**: Port-level device interconnections
-- **Multi-Format Export**: JSON, GraphML (Gephi), and DOT (Graphviz) formats
-- **Network Depth Analysis**: Identify network hierarchy and uplink relationships
-- **Visual Coordinates**: Optional device positioning for diagrams
-
-### Advanced Features
-
-- **Redis Caching**: Optional Redis-based caching for improved performance (configurable TTL per resource type)
-- **Webhook Support**: Real-time event processing with HMAC signature verification
-- **Automatic Cache Invalidation**: Smart cache invalidation when configuration changes
-- **Event Handlers**: Built-in handlers for device, client, and alert events
-- **Performance Tracking**: Optional agnost.ai integration for monitoring MCP tool performance and usage analytics
-
-### Safety & Security
-
-- **Confirmation Required**: All mutating operations require explicit `confirm=True` flag
-- **Dry-Run Mode**: Preview changes before applying them with `dry_run=True`
-- **Audit Logging**: All operations logged to `audit.log` for compliance
-- **Input Validation**: Comprehensive parameter validation with detailed error messages
-- **Password Masking**: Sensitive data automatically masked in logs
-- **Type-Safe**: Full type hints and Pydantic validation throughout
-- **Security Scanners**: CodeQL, Trivy, Bandit, Safety, and detect-secrets integration
-
-### Technical Excellence
-
-- **Async Support**: Built with async/await for high performance and concurrency
+## Credits
+- Original project by `enuno` and contributors: https://github.com/enuno/unifi-mcp-server
+- Licensed under Apache-2.0 (see LICENSE)
 - **MCP Protocol**: Standard Model Context Protocol for AI agent integration
 - **Comprehensive Testing**: 990 unit tests with 78.18% coverage (4,865 of 6,105 statements)
 - **CI/CD Pipelines**: Automated testing, security scanning, and Docker builds (18 checks)
