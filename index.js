@@ -24,5 +24,5 @@ module.exports = {
     docker: 'docker pull ghcr.io/enuno/unifi-mcp-server:0.2.0'
   },
   repository: 'https://github.com/enuno/unifi-mcp-server',
-  documentation: 'https://github.com/enuno/unifi-mcp-server/blob/main/API.md'
+  documentation: 'https://github.com/enuno/unifi-mcp-server/blob/main/docs/API.md'
 };

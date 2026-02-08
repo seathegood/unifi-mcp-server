@@ -86,7 +86,7 @@ unifi-mcp-server/
 ### Before Starting Work
 
 1. **Understand the Context:**
-   - Read relevant documentation (`README.md`, `API.md`, `CONTRIBUTING.md`)
+   - Read relevant documentation (`../README.md`, `API.md`, `CONTRIBUTING.md`)
    - Review related issues and pull requests
    - Understand the feature request or bug report completely
 
@@ -657,7 +657,7 @@ ruff check src/ tests/ --fix
 
 Update relevant documentation files:
 
-- `README.md` - For user-facing changes
+- `../README.md` - For user-facing changes
 - `API.md` - For new MCP tools or resources
 - `CONTRIBUTING.md` - For workflow changes
 - `SECURITY.md` - For security-related changes

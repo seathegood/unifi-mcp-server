@@ -46,6 +46,11 @@ This is a maintenance release focused on improving the development and testing i
 
 See [CHANGELOG.md](CHANGELOG.md) for complete release notes and [VERIFICATION_REPORT.md](VERIFICATION_REPORT.md) for detailed verification.
 
+### Fork note (seathegood)
+- This fork tracks upstream `enuno/unifi-mcp-server` but develops under `seathegood/unifi-mcp-server`; branch protections will be enforced on `main` (PRs + checks, no direct pushes).
+- Environment contract is harmonized on the new names (`UNIFI_API_TYPE`, `UNIFI_CLOUD_API_URL`, `UNIFI_LOCAL_*`, `UNIFI_RATE_LIMIT_REQUESTS`/`PERIOD`, `UNIFI_REQUEST_TIMEOUT`, etc.) with compatibility shims for legacy vars.
+- Documentation has moved to `docs/` (API, contributing, security, plans, reports).
+
 ## 🌐 API Mode Support
 
 The UniFi MCP Server supports **three distinct API modes** with different capabilities:
@@ -864,7 +869,7 @@ asyncio.run(main())
 
 ## API Documentation
 
-See [API.md](API.md) for complete API documentation, including:
+See [docs/API.md](docs/API.md) for complete API documentation, including:
 
 - Available MCP tools
 - Resource URI schemes
@@ -1005,13 +1010,7 @@ unifi-mcp-server/
 ├── .env.example           # Environment variable template
 ├── pyproject.toml         # Project configuration
 ├── README.md              # This file
-├── API.md                 # Complete API documentation
-├── ZBF_STATUS.md          # Zone-Based Firewall implementation status
-├── TESTING_PLAN.md        # Testing strategy and roadmap
-├── DEVELOPMENT_PLAN.md    # Development roadmap
-├── CONTRIBUTING.md        # Contribution guidelines
-├── SECURITY.md            # Security policy and best practices
-├── AGENTS.md              # AI agent guidelines
+├── docs/                  # Documentation (API.md, CONTRIBUTING.md, SECURITY.md, plans, reports)
 └── LICENSE                # Apache 2.0 License
 ```
 
@@ -1019,10 +1018,10 @@ unifi-mcp-server/
 
 We welcome contributions from both human developers and AI coding assistants! Please see:
 
-- [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guidelines
-- [AGENTS.md](AGENTS.md) - AI agent-specific guidelines
-- [AI_CODING_ASSISTANT.md](AI_CODING_ASSISTANT.md) - AI coding standards
-- [AI_GIT_PRACTICES.md](AI_GIT_PRACTICES.md) - AI Git practices
+- [CONTRIBUTING.md](docs/CONTRIBUTING.md) - Contribution guidelines
+- [AGENTS.md](docs/AGENTS.md) - AI agent-specific guidelines
+- [AI_CODING_ASSISTANT.md](docs/AI-Coding/AI_CODING_ASSISTANT.md) - AI coding standards
+- [AI_GIT_PRACTICES.md](docs/AI-Coding/AI_GIT_PRACTICES.md) - AI Git practices
 
 ### Quick Contribution Guide
 
@@ -1171,7 +1170,7 @@ Security is a top priority. Please see [SECURITY.md](SECURITY.md) for:
 - [x] 18/18 CI/CD checks passing
 - [x] Zero security vulnerabilities
 - [x] 30+ AI assistant example prompts
-- [x] Comprehensive documentation (VERIFICATION_REPORT.md, API.md)
+- [x] Comprehensive documentation (docs/VERIFICATION_REPORT.md, docs/API.md)
 
 **Total: 74 MCP tools + Comprehensive documentation and verification**
 
@@ -1210,18 +1209,18 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/enuno/unifi-mcp-server/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/enuno/unifi-mcp-server/discussions)
-- **Documentation**: See [API.md](API.md) and other docs in this repository
+- **Issues**: [GitHub Issues](https://github.com/seathegood/unifi-mcp-server/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/seathegood/unifi-mcp-server/discussions)
+- **Documentation**: See [docs/API.md](docs/API.md) and other docs in this repository
 
 ## Links
 
-- **Repository**: <https://github.com/enuno/unifi-mcp-server>
-- **Releases**: <https://github.com/enuno/unifi-mcp-server/releases>
-- **Docker Registry**: <https://ghcr.io/enuno/unifi-mcp-server>
+- **Repository**: <https://github.com/seathegood/unifi-mcp-server>
+- **Releases**: <https://github.com/seathegood/unifi-mcp-server/releases>
+- **Docker Registry**: <https://ghcr.io/enuno/unifi-mcp-server> *(upstream images; update when fork registry is published)*
 - **npm Package**: <https://www.npmjs.com/package/unifi-mcp-server>
 - **MCP Registry**: Search for `io.github.enuno/unifi-mcp-server` at <https://registry.modelcontextprotocol.io>
-- **Documentation**: [API.md](API.md) | [VERIFICATION_REPORT.md](VERIFICATION_REPORT.md)
+- **Documentation**: [docs/API.md](docs/API.md) | [docs/VERIFICATION_REPORT.md](docs/VERIFICATION_REPORT.md)
 - **UniFi Official**: <https://www.ui.com/>
 
 ## 🌟 Star History
