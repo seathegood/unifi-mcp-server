@@ -1,6 +1,6 @@
 # Code Development Plan for UniFi MCP Server (Updated)
 
-This plan incorporates the latest UniFi API endpoint additions and enhancements. Use this as your operational roadmap for AI coding assistants (Claude, Cursor, Windsurf, etc.).
+This plan incorporates the latest UniFi API endpoint additions and enhancements. Use this as your operational roadmap for AI coding assistants (ChatGPT, Cursor, Windsurf, etc.).
 
 ## Project Overview
 

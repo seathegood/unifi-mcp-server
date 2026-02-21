@@ -198,6 +198,6 @@ pip install unifi-mcp-server==0.2.0
 
 **Release v0.2.0 is now fully published and available on all primary channels!**
 
-**Prepared by:** Claude (Sonnet 4.5)
+**Prepared by:** AI assistant
 **Date:** 2026-01-25
 **Version:** 1.0

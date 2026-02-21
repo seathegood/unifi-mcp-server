@@ -5,6 +5,7 @@ This document provides universal rules, workflows, and best practices for all AI
 ## Table of Contents
 
 - [Core Principles](#core-principles)
+- [ChatGPT Integration](#chatgpt-integration)
 - [File Structure and Organization](#file-structure-and-organization)
 - [Workflow Guidelines](#workflow-guidelines)
 - [Do's and Don'ts](#dos-and-donts)
@@ -45,6 +46,12 @@ All AI agents must adhere to these fundamental principles:
 - Include comprehensive tests for all code changes
 - Ensure code passes all quality checks before submission
 - Perform self-review before requesting human review
+
+## ChatGPT Integration
+
+- For ChatGPT connector setup, transport expectations, and security controls, see `docs/chatgpt.md`.
+- Prefer read-only tool exposure for Deep Research workflows.
+- Use authenticated remote transport endpoints for Developer Mode workflows.
 
 ## File Structure and Organization
 
@@ -726,7 +733,7 @@ Mark AI-assisted PRs in the description:
 ```markdown
 ## AI Assistance
 
-This PR was created with assistance from Claude Code.
+This PR was created with assistance from an AI coding assistant.
 
 **Human Review Status:** ✅ Reviewed and approved by @username
 **Test Coverage:** 95%

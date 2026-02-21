@@ -203,7 +203,7 @@ docker logs unifi-mcp
 docker rm -f unifi-mcp
 ```
 
-**Note**: For MCP client integration (Claude Desktop, etc.), see the [Usage](#usage) section below for the correct configuration without `-d` flag.
+**Note**: For MCP client integration, see the [Usage](#usage) section below for the correct configuration without `-d` flag.
 
 ## Build from Source
 
@@ -462,11 +462,23 @@ uv run python src/main.py
 
 The MCP Inspector will be available at `http://localhost:5173` for interactive testing.
 
+## ChatGPT Integration
+
+### Deep Research Connector (read-only)
+
+ChatGPT Deep Research connectors work best with MCP servers that expose only `search` and `fetch` tools. This server includes many operational tools, so use a read-only proxy or filtered deployment for Deep Research scenarios.
+
+### Developer Mode (interactive chat)
+
+ChatGPT Developer Mode can use broader MCP toolsets and is a better fit for interactive UniFi operations. Run this server over a remote MCP transport (streaming HTTP preferred, SSE acceptable when documented).
+
+For setup details, transport examples, and security guidance, see [docs/chatgpt.md](docs/chatgpt.md).
+
 ## Usage
 
-### With Claude Desktop
+### With Local STDIO MCP Clients
 
-Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/claude_desktop_config.json` on macOS):
+Use the following MCP client configuration patterns for local STDIO clients:
 
 #### Option 1: Using PyPI Package (Recommended)
 
@@ -869,8 +881,7 @@ uv run mcp dev src/main.py
 unifi-mcp-server/
 ├── .github/
 │   └── workflows/          # CI/CD pipelines (CI, security, release)
-├── .claude/
-│   └── commands/          # Custom slash commands for development
+├── docs/agents/         # Neutral AI agent command guides
 ├── src/
 │   ├── main.py            # MCP server entry point (77 tools registered)
 │   ├── cache.py           # Redis caching implementation
@@ -1094,7 +1105,7 @@ This project is inspired by and builds upon:
 
 - [sirkirby/unifi-network-mcp](https://github.com/sirkirby/unifi-network-mcp) - Reference implementation
 - [MakeWithData UniFi MCP Guide](https://www.makewithdata.tech/p/build-a-mcp-server-for-ai-access) - Tutorial and guide
-- [Anthropic MCP](https://github.com/anthropics/mcp) - Model Context Protocol specification
+- [Model Context Protocol](https://modelcontextprotocol.io) - Protocol documentation and ecosystem
 - [FastMCP](https://github.com/jlowin/fastmcp) - MCP server framework
 
 ## License

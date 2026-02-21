@@ -23,7 +23,7 @@ The UniFi MCP Server bridges the gap between AI applications and UniFi Network C
 ```
 ┌─────────────────┐
 │  AI Application │
-│  (Claude, etc.) │
+│  (ChatGPT, Cursor, etc.) │
 └────────┬────────┘
          │ MCP Protocol
          │
@@ -239,7 +239,7 @@ docker run -i \
   ghcr.io/enuno/unifi-mcp-server:latest
 ```
 
-**Privacy-Focused Tracking (Claude Desktop):**
+**Privacy-Focused Tracking (MCP Client):**
 
 ```json
 {
@@ -2736,7 +2736,7 @@ asyncio.run(monitor_devices())
 
 ## Example AI Assistant Prompts
 
-This section provides example natural language prompts you can use with AI assistants (like Claude) that have access to the UniFi MCP Server. These demonstrate real-world use cases for the v0.2.0 features.
+This section provides example natural language prompts you can use with AI assistants (for example, ChatGPT) that have access to the UniFi MCP Server. These demonstrate real-world use cases for the v0.2.0 features.
 
 ### Network Topology & Visualization
 

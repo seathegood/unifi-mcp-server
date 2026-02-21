@@ -161,7 +161,7 @@ b217abf docs: add comprehensive release completion guide for v0.2.0
 ### Code Quality
 - **Linting**: Passing (Ruff, Black)
 - **Type Checking**: No mypy errors
-- **Documentation**: Comprehensive (CLAUDE.md, API.md, README.md)
+- **Documentation**: Comprehensive (AGENTS.md, API.md, README.md)
 
 ---
 

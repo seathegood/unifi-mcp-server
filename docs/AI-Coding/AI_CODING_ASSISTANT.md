@@ -66,4 +66,4 @@ For local development and testing, the following steps should be followed, as in
 
 [1] sirkirby. (2025). *unifi-network-mcp*. GitHub. Retrieved from [https://github.com/sirkirby/unifi-network-mcp](https://github.com/sirkirby/unifi-network-mcp)
 
-[2] King, Z. (2025, March 30). *Build a MCP Server for AI Access to UniFi Networks (Goose or Claude)*. MakeWithData. Retrieved from [https://www.makewithdata.tech/p/build-a-mcp-server-for-ai-access](https://www.makewithdata.tech/p/build-a-mcp-server-for-ai-access)
+[2] King, Z. (2025, March 30). *Build a MCP Server for AI Access to UniFi Networks (Goose or other AI assistants)*. MakeWithData. Retrieved from [https://www.makewithdata.tech/p/build-a-mcp-server-for-ai-access](https://www.makewithdata.tech/p/build-a-mcp-server-for-ai-access)

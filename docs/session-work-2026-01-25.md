@@ -24,8 +24,8 @@
    - Included post-release verification procedures
    - Documented rollback procedures and troubleshooting
 
-3. **Rewrote CLAUDE.md** (CLAUDE.md:1-126)
-   - Removed references to docs/claude submodule
+3. **Rewrote AI assistant guidance docs** (`docs/chatgpt.md`:1-126)
+   - Removed references to a legacy AI docs submodule
    - Created project-specific AI assistant guidelines
    - Documented current development focus (v0.2.0 complete)
    - Included technology stack and API mode information
@@ -34,21 +34,21 @@
 
 ### Project Cleanup
 
-4. **Removed docs/claude Submodule**
-   - Executed git submodule deinit -f docs/claude
+4. **Removed legacy AI docs submodule**
+   - Executed git submodule deinit for the legacy docs path
    - Removed submodule from git index
    - Deleted .gitmodules file
-   - Cleaned .git/modules/docs/claude directory
-   - Updated all references to docs/claude across the project
+   - Cleaned the corresponding `.git/modules/...` directory
+   - Updated all references to the removed submodule across the project
 
 5. **Updated Cursor Rules** (.cursor/rules/*.mdc)
-   - project-context.mdc:15-16 - Removed docs/claude references
+   - project-context.mdc:15-16 - Removed legacy submodule references
    - common-mistakes.mdc:19,31 - Updated AI assistant references
    - workflow.mdc:14 - Updated workflow guidance
 
 ### New Development Tool
 
-6. **Created UniFi MCP Tool Builder Skill** (.claude/skills/unifi-mcp-tool-builder/SKILL.md)
+6. **Created UniFi MCP Tool Builder Skill** (legacy assistant skill path)
    - Adapted from mcp-builder template
    - 752 lines of comprehensive guidance
    - Specific to UniFi Network Controller API
@@ -61,29 +61,29 @@
 ## Files Modified
 
 ### Created (2 files)
-- .claude/skills/unifi-mcp-tool-builder/SKILL.md - New skill for TDD-based tool development (752 lines)
+- Legacy assistant skill file - New skill for TDD-based tool development (752 lines)
 - docs/RELEASE_PROCESS.md - Standalone release documentation (347 lines)
 
 ### Modified (5 files)
 - README.md - Added Cursor and generic MCP client configs, linked to RELEASE_PROCESS.md
-- CLAUDE.md - Complete rewrite with UniFi-specific AI assistant guidelines (126 lines)
+- docs/chatgpt.md - Complete rewrite with UniFi-specific AI assistant guidelines (126 lines)
 - .cursor/rules/project-context.mdc - Updated AI assistant references
 - .cursor/rules/common-mistakes.mdc - Updated AI assistant references
 - .cursor/rules/workflow.mdc - Updated workflow guidance
 
 ### Deleted (2 files)
 - .gitmodules - Submodule configuration removed
-- docs/claude - Submodule removed
+- Legacy AI docs submodule - Removed
 
 ---
 
 ## Technical Decisions
 
-1. **Submodule Removal**: Removed docs/claude submodule to eliminate external dependency and simplify project structure. Replaced with project-specific CLAUDE.md.
+1. **Submodule Removal**: Removed the legacy AI docs submodule to eliminate external dependency and simplify project structure. Replaced with project-specific `docs/chatgpt.md`.
 
 2. **Release Process Extraction**: Moved release documentation to standalone file to improve discoverability and reduce README.md length.
 
-3. **Client Configuration Expansion**: Added Cursor-specific examples to support the growing MCP client ecosystem beyond just Claude Desktop.
+3. **Client Configuration Expansion**: Added Cursor-specific examples to support the growing MCP client ecosystem beyond a single desktop client.
 
 4. **Skill Creation**: Created UniFi-specific tool builder skill by adapting generic mcp-builder template.
 
