@@ -1,0 +1,32 @@
+services:
+  unifi-mcp:
+    image: ghcr.io/seathegood/unifi-mcp-server:latest
+    container_name: unifi-mcp
+    restart: unless-stopped
+    env_file:
+      - ./env
+    environment:
+      MCP_TRANSPORT: http
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: 8080
+      MCP_PATH: /mcp
+    expose:
+      - "8080"
+    # Traefik labels are examples only. Adjust names, entrypoints, certResolver,
+    # and middleware references for your environment.
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.unifi-mcp.rule=Host(`unifi-mcp.<your-domain>`) && PathPrefix(`/mcp`)
+      - traefik.http.routers.unifi-mcp.entrypoints=websecure
+      - traefik.http.routers.unifi-mcp.tls=true
+      - traefik.http.routers.unifi-mcp.tls.certresolver=letsencrypt
+      - traefik.http.services.unifi-mcp.loadbalancer.server.port=8080
+      # Optional security middlewares (examples):
+      # - traefik.http.routers.unifi-mcp.middlewares=authentik@file,unifi-mcp-allowlist@file
+
+# Example only: attach this service to whichever Docker network your Traefik
+# instance already uses (for example, external: true + name: proxy).
+# networks:
+#   default:
+#     external: true
+#     name: proxy
