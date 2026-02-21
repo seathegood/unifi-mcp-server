@@ -525,6 +525,13 @@ ChatGPT Developer Mode can use broader MCP toolsets and is a better fit for inte
 
 For setup details, transport examples, and security guidance, see [docs/chatgpt.md](docs/chatgpt.md).
 
+### Integration Prompts
+
+Paste-ready prompt packs for another ChatGPT chat are available at:
+
+- [docs/prompts/deep-research-prompts.md](docs/prompts/deep-research-prompts.md) (search/fetch-oriented Deep Research prompts)
+- [docs/prompts/chat-mode-prompts.md](docs/prompts/chat-mode-prompts.md) (Developer Mode, read-only prompts)
+
 ## Usage
 
 ### Run Commands
