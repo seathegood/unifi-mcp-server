@@ -197,7 +197,7 @@ This document provides a comprehensive, phase-by-phase breakdown of development 
 **Priority**: P1 (High - Important for business networks)
 **Dependencies**: Traffic Flow analysis (Phase 2) ✅ Complete
 **Test Coverage Target**: 80%+ (higher than general 70% target)
-**Detailed Plan**: See `/Users/elvis/.claude/plans/dreamy-mapping-capybara.md`
+**Detailed Plan**: See `docs/plans/dreamy-mapping-capybara.md`
 
 #### 📋 Research Foundation (COMPLETE ✅)
 

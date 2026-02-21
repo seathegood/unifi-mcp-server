@@ -1813,8 +1813,8 @@ Basic internal zone:
 
 #### 8.4.1 MCP Client Integration
 
-**Claude Desktop Integration:**
-- Configuration file setup (`claude_desktop_config.json`)
+**ChatGPT Developer Mode Integration:**
+- Configuration file setup (`mcp-server config JSON`)
 - Environment variable configuration
 - Authentication credential management
 - Multi-site setup

@@ -29,7 +29,7 @@ By segregating these outputs, you can simplify navigation, speed up code review 
 
 To maximize the efficiency of AI assistants, it is often beneficial to create custom commands and automation scripts. Clear documentation of these tools is essential for ensuring they are used correctly and consistently by all contributors, both human and AI.
 
-- **Dedicated Directory:** Create a dedicated directory for automation scripts and custom commands, for example, `.claude/commands/`.
+- **Dedicated Directory:** Create a dedicated directory for automation scripts and custom commands, for example, `docs/agents/`.
 - **Markdown Documentation:** Document each command’s purpose, usage, and parameters in Markdown files within this directory.
 - **Quick-Reference Guides:** Provide quick-reference guides for common AI workflows, such as `/pr` to automate pull request creation or `/test` to run the test suite.
 

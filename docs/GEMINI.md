@@ -573,7 +573,7 @@ if cache:
 This project supports multiple AI coding assistants. Coordination patterns:
 
 1. **Gemini**: High-level architecture, API design, batch operations
-2. **Claude**: Complex refactoring, documentation generation, code review
+2. **ChatGPT/Codex**: Complex refactoring, documentation generation, code review
 3. **Copilot**: Rapid boilerplate, autocomplete, inline suggestions
 4. **Cursor**: Multi-file edits, codebase-wide changes
 
@@ -589,7 +589,7 @@ All agents read from:
 Agent-specific files:
 
 - `GEMINI.md` (this file)
-- `CLAUDE.md`
+- `chatgpt.md`
 - `.cursorrules`
 - `copilot-instructions.md`
 
