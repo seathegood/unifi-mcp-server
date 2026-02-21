@@ -1,8 +1,10 @@
 """Main entry point for UniFi MCP Server."""
 
 import asyncio
+import inspect
 import os
-from typing import TypeVar
+from collections.abc import Awaitable, Callable
+from typing import Any, TypeVar
 
 from agnost import config as agnost_config
 from agnost import track
@@ -14,6 +16,7 @@ from .resources import site_manager as site_manager_resource
 from .tools import acls as acls_tools
 from .tools import application as application_tools
 from .tools import backups as backups_tools
+from .tools import change_control as change_control_tools
 from .tools import client_management as client_mgmt_tools
 from .tools import clients as clients_tools
 from .tools import device_control as device_control_tools
@@ -39,7 +42,8 @@ from .tools import vouchers as vouchers_tools
 from .tools import vpn as vpn_tools
 from .tools import wans as wans_tools
 from .tools import wifi as wifi_tools
-from .utils import get_logger
+from .tools.registry import TOOL_REGISTRY, classify_tool
+from .utils import ValidationError, get_logger
 from .utils.redaction import redact_client_device_data
 
 # Initialize settings
@@ -94,6 +98,7 @@ site_manager_res = site_manager_resource.SiteManagerResource(settings)
 # MCP Tools
 RedactablePayload = TypeVar("RedactablePayload", dict, list)
 DEEP_RESEARCH_TOOL_NAMES = {"health_check", "search", "fetch"}
+MUTATING_SAFE_ENTRYPOINTS = {"plan_mutation", "apply_mutation"}
 
 
 def _redact_response(payload: RedactablePayload) -> RedactablePayload:
@@ -103,6 +108,8 @@ def _redact_response(payload: RedactablePayload) -> RedactablePayload:
 
 def _is_tool_enabled(tool_name: str) -> bool:
     """Return whether a tool should be exposed for the active profile."""
+    if classify_tool(tool_name) == "mutating" and tool_name not in MUTATING_SAFE_ENTRYPOINTS:
+        return False
     if settings.mcp_profile == "full":
         return True
     return tool_name in DEEP_RESEARCH_TOOL_NAMES
@@ -143,6 +150,84 @@ async def search(query: str) -> list[dict]:
 async def fetch(id: str) -> dict:
     """Fetch a generated UniFi configuration document by id for Deep Research."""
     return await documents_tools.fetch_document(id, settings)
+
+
+def _get_mutating_tool(tool_name: str) -> Callable[..., Awaitable[Any]]:
+    metadata = TOOL_REGISTRY.get(tool_name)
+    if metadata is None or metadata.classification != "mutating":
+        raise ValidationError(f"'{tool_name}' is not a known mutating tool")
+
+    tool = globals().get(tool_name)
+    if tool is None or not callable(tool):
+        raise ValidationError(f"mutating tool '{tool_name}' is not available")
+    return tool  # type: ignore[return-value]
+
+
+@register_tool()
+async def plan_mutation(
+    tool_name: str,
+    params: dict[str, Any],
+    dry_run: bool = True,
+) -> dict[str, Any]:
+    """Plan a mutating operation and return a short-lived plan token."""
+    if not dry_run:
+        raise ValidationError("plan_mutation is always dry-run; set dry_run=True")
+    if not isinstance(params, dict):
+        raise ValidationError("params must be an object")
+
+    tool = _get_mutating_tool(tool_name)
+    signature = inspect.signature(tool)
+
+    if "confirm" in params or "dry_run" in params:
+        raise ValidationError("Do not pass confirm/dry_run in params; plan_mutation manages these")
+
+    try:
+        bound = signature.bind(**params)
+    except TypeError as exc:
+        raise ValidationError(f"invalid params for '{tool_name}': {exc}") from exc
+
+    preview_warnings: list[str] = []
+    planned_payload = dict(bound.arguments)
+    plan_call_args = dict(planned_payload)
+    apply_call_args = dict(planned_payload)
+
+    if "confirm" in signature.parameters:
+        plan_call_args["confirm"] = True
+        apply_call_args["confirm"] = True
+
+    if "dry_run" in signature.parameters:
+        plan_call_args["dry_run"] = True
+        apply_call_args["dry_run"] = False
+        preview = await tool(**plan_call_args)
+    else:
+        preview = {
+            "status": "planned",
+            "message": f"'{tool_name}' has no native dry_run response; preview shows requested parameters",
+            "requested_params": planned_payload,
+        }
+        preview_warnings.append(f"'{tool_name}' does not expose dry_run preview details")
+
+    async def _executor() -> Any:
+        return await tool(**apply_call_args)
+
+    plan = change_control_tools.create_plan(
+        action_type=tool_name,
+        payload=planned_payload,
+        diff={
+            "tool": tool_name,
+            "parameters": planned_payload,
+            "preview": preview,
+        },
+        warnings=preview_warnings,
+        executor=_executor,
+    )
+    return plan
+
+
+@register_tool()
+async def apply_mutation(plan_id: str, confirmation_token: str) -> dict[str, Any]:
+    """Apply a previously planned mutating operation."""
+    return await change_control_tools.apply_plan(plan_id, confirmation_token)
 
 
 # Register debug tool only if DEBUG is enabled
