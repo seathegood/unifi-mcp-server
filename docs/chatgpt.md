@@ -55,3 +55,55 @@ Use these prompts after connecting ChatGPT to your MCP endpoint.
 4. `Explain which tool calls were made and why each call was needed.`
 
 If these pass, move to role-based access, narrower scopes, and production hardening.
+
+## Deep Research Document Contract
+
+The Deep Research tools return stable document metadata to make retrieval deterministic.
+
+- `search(query)` returns a ranked list (default top 5):
+  - `id` (string)
+  - `title` (string)
+  - `snippet` (string)
+  - `updated_at` (ISO8601 UTC string)
+  - `site_scope` (site label or `all sites: ...` for aggregated docs)
+- `fetch(id)` returns:
+  - `id` (string)
+  - `title` (string)
+  - `updated_at` (ISO8601 UTC string)
+  - `site_scope` (string)
+  - `text` (string)
+  - `source` (optional string; controller source, redacted by default when needed)
+
+The current document ids are:
+
+- `inventory_snapshot`
+- `networks_vlans_subnets`
+- `wifi_ssids_security`
+- `firewall_posture_summary`
+- `port_profiles_summary`
+
+### Example `fetch("networks_vlans_subnets")`
+
+```json
+{
+  "id": "networks_vlans_subnets",
+  "title": "Networks, VLANs, and Subnets",
+  "updated_at": "2026-02-21T01:23:45.123456+00:00",
+  "site_scope": "all sites: HQ (site-1)",
+  "source": "https://api.ui.com",
+  "text": "# Networks, VLANs, and Subnets\\n- Generated (UTC): 2026-02-21T01:23:45.123456+00:00\\n- Controller: https://api.ui.com\\n- Site context: all sites: HQ (site-1)\\n\\n## Networks\\n### Site: HQ (site-1)\\n- LAN | purpose=corporate | vlan=1 | subnet=10.0.1.0/24 | dhcp=True\\n\\n## Raw (redacted) JSON\\n{...}"
+}
+```
+
+### Example `fetch("inventory_snapshot")`
+
+```json
+{
+  "id": "inventory_snapshot",
+  "title": "Inventory Snapshot",
+  "updated_at": "2026-02-21T01:23:45.123456+00:00",
+  "site_scope": "all sites: HQ (site-1)",
+  "source": "https://api.ui.com",
+  "text": "# Inventory Snapshot\\n- Generated (UTC): 2026-02-21T01:23:45.123456+00:00\\n- Controller: https://api.ui.com\\n- Site context: all sites: HQ (site-1)\\n\\n## Summary\\n- Site: HQ (site-1)\\n  - Devices: 1 (1 online)\\n  - Clients (known): 1\\n  - Networks: 1\\n  - SSIDs: 1\\n\\n## Raw (redacted) JSON\\n{...}"
+}
+```

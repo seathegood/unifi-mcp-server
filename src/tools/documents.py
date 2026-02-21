@@ -15,6 +15,7 @@ from ..config import Settings
 from ..utils import get_logger
 
 logger = get_logger(__name__)
+DEFAULT_SEARCH_LIMIT = 5
 
 _DOC_SPECS: tuple[tuple[str, str], ...] = (
     ("inventory_snapshot", "Inventory Snapshot"),
@@ -48,14 +49,15 @@ PUBLIC_IP_KEY_MARKERS = ("wan", "public", "external", "uplink")
 
 
 @dataclass
-class ConfigurationDocument:
-    """Generated configuration document for Deep Research."""
+class Document:
+    """Generated and redacted document for Deep Research."""
 
     id: str
     title: str
     updated_at: str
+    site_scope: str
     text: str
-    url: str | None = None
+    source: str | None = None
 
 
 def list_document_ids() -> list[str]:
@@ -63,8 +65,10 @@ def list_document_ids() -> list[str]:
     return [doc_id for doc_id, _ in _DOC_SPECS]
 
 
-async def search_documents(query: str, settings: Settings) -> list[dict[str, Any]]:
-    """Search generated configuration documents by keyword matching."""
+async def search_documents(
+    query: str, settings: Settings, limit: int = DEFAULT_SEARCH_LIMIT
+) -> list[dict[str, Any]]:
+    """Search generated configuration documents by ranked keyword matching."""
     query_text = query.strip()
     if not query_text:
         return []
@@ -72,24 +76,11 @@ async def search_documents(query: str, settings: Settings) -> list[dict[str, Any
     documents = await _build_documents(settings)
     tokens = [token for token in re.split(r"\s+", query_text.lower()) if token]
     query_lower = query_text.lower()
+    result_limit = max(1, min(limit, 20))
 
     results: list[dict[str, Any]] = []
     for doc in documents:
-        title_lower = doc.title.lower()
-        body_lower = doc.text.lower()
-
-        score = 0
-        if query_lower in title_lower:
-            score += 8
-        if query_lower in body_lower:
-            score += 4
-
-        for token in tokens:
-            if token in title_lower:
-                score += 4
-            if token in body_lower:
-                score += 1
-
+        score = _score_document(doc, query_lower, tokens)
         if score <= 0:
             continue
 
@@ -98,12 +89,17 @@ async def search_documents(query: str, settings: Settings) -> list[dict[str, Any
                 "id": doc.id,
                 "title": doc.title,
                 "snippet": _build_snippet(doc.text, query_lower),
-                "score": score,
+                "updated_at": doc.updated_at,
+                "site_scope": doc.site_scope,
+                "_score": score,
             }
         )
 
-    results.sort(key=lambda item: item["score"], reverse=True)
-    return results
+    results.sort(key=lambda item: (-int(item["_score"]), str(item["id"])))
+    return [
+        {key: value for key, value in result.items() if key != "_score"}
+        for result in results[:result_limit]
+    ]
 
 
 async def fetch_document(doc_id: str, settings: Settings) -> dict[str, Any]:
@@ -113,19 +109,22 @@ async def fetch_document(doc_id: str, settings: Settings) -> dict[str, Any]:
 
     if doc_id not in by_id:
         known = ", ".join(sorted(by_id.keys()))
-        raise ValueError(f"Unknown document id '{doc_id}'. Known ids: {known}")
+        raise ValueError(f"Document '{doc_id}' not found. Known ids: {known}")
 
     doc = by_id[doc_id]
     payload: dict[str, Any] = {
         "id": doc.id,
         "title": doc.title,
-        "url": doc.url,
+        "updated_at": doc.updated_at,
+        "site_scope": doc.site_scope,
         "text": doc.text,
     }
+    if doc.source:
+        payload["source"] = doc.source
     return payload
 
 
-async def _build_documents(settings: Settings) -> list[ConfigurationDocument]:
+async def _build_documents(settings: Settings) -> list[Document]:
     """Generate all configuration documents from current controller state."""
     now = datetime.now(UTC)
     updated_at = now.isoformat()
@@ -154,81 +153,134 @@ async def _build_documents(settings: Settings) -> list[ConfigurationDocument]:
             if _site_id(site)
         ]
 
-    context = _site_context(site_records)
-    controller = _controller_label(settings, include_public_ip)
+    site_records.sort(key=lambda record: str(record["site_id"]))
+    site_scope = _site_scope(site_records)
+    source = _controller_source(settings, include_public_ip)
 
     return [
-        ConfigurationDocument(
+        _create_document(
             id="inventory_snapshot",
             title="Inventory Snapshot",
             updated_at=updated_at,
+            site_scope=site_scope,
+            source=source,
             text=_render_inventory_doc(
                 updated_at,
-                controller,
-                context,
+                source or "unknown",
+                site_scope,
                 site_records,
                 include_macs,
                 include_serials,
                 include_public_ip,
             ),
+            include_macs=include_macs,
+            include_serials=include_serials,
+            include_public_ip=include_public_ip,
         ),
-        ConfigurationDocument(
+        _create_document(
             id="networks_vlans_subnets",
             title="Networks, VLANs, and Subnets",
             updated_at=updated_at,
+            site_scope=site_scope,
+            source=source,
             text=_render_networks_doc(
                 updated_at,
-                controller,
-                context,
+                source or "unknown",
+                site_scope,
                 site_records,
                 include_macs,
                 include_serials,
                 include_public_ip,
             ),
+            include_macs=include_macs,
+            include_serials=include_serials,
+            include_public_ip=include_public_ip,
         ),
-        ConfigurationDocument(
+        _create_document(
             id="wifi_ssids_security",
             title="Wi-Fi SSIDs and Security",
             updated_at=updated_at,
+            site_scope=site_scope,
+            source=source,
             text=_render_wifi_doc(
                 updated_at,
-                controller,
-                context,
+                source or "unknown",
+                site_scope,
                 site_records,
                 include_macs,
                 include_serials,
                 include_public_ip,
             ),
+            include_macs=include_macs,
+            include_serials=include_serials,
+            include_public_ip=include_public_ip,
         ),
-        ConfigurationDocument(
+        _create_document(
             id="firewall_posture_summary",
             title="Firewall Posture Summary",
             updated_at=updated_at,
+            site_scope=site_scope,
+            source=source,
             text=_render_firewall_doc(
                 updated_at,
-                controller,
-                context,
+                source or "unknown",
+                site_scope,
                 site_records,
                 include_macs,
                 include_serials,
                 include_public_ip,
             ),
+            include_macs=include_macs,
+            include_serials=include_serials,
+            include_public_ip=include_public_ip,
         ),
-        ConfigurationDocument(
+        _create_document(
             id="port_profiles_summary",
             title="Port Profiles Summary",
             updated_at=updated_at,
+            site_scope=site_scope,
+            source=source,
             text=_render_port_profiles_doc(
                 updated_at,
-                controller,
-                context,
+                source or "unknown",
+                site_scope,
                 site_records,
                 include_macs,
                 include_serials,
                 include_public_ip,
             ),
+            include_macs=include_macs,
+            include_serials=include_serials,
+            include_public_ip=include_public_ip,
         ),
     ]
+
+
+def _create_document(
+    id: str,
+    title: str,
+    updated_at: str,
+    site_scope: str,
+    text: str,
+    include_macs: bool,
+    include_serials: bool,
+    include_public_ip: bool,
+    source: str | None = None,
+) -> Document:
+    redacted_text = _redact_document_text(
+        text,
+        include_macs=include_macs,
+        include_serials=include_serials,
+        include_public_ip=include_public_ip,
+    )
+    return Document(
+        id=id,
+        title=title,
+        updated_at=updated_at,
+        site_scope=site_scope,
+        text=redacted_text,
+        source=source,
+    )
 
 
 def _base_header(title: str, updated_at: str, controller: str, site_context: str) -> list[str]:
@@ -503,13 +555,17 @@ def _append_raw_json(
     return "\n".join(lines)
 
 
-def _site_context(site_records: list[dict[str, Any]]) -> str:
+def _site_scope(site_records: list[dict[str, Any]]) -> str:
     if not site_records:
-        return "No sites returned"
-    return ", ".join(f"{site['site_name']} ({site['site_id']})" for site in site_records)
+        return "all sites (none returned)"
+    if len(site_records) == 1:
+        site = site_records[0]
+        return f"{site['site_name']} ({site['site_id']})"
+    sites = ", ".join(f"{site['site_name']} ({site['site_id']})" for site in site_records)
+    return f"all sites: {sites}"
 
 
-def _controller_label(settings: Settings, include_public_ip: bool) -> str:
+def _controller_source(settings: Settings, include_public_ip: bool) -> str | None:
     parsed = urlparse(settings.base_url)
     host = parsed.hostname or settings.base_url
     port = parsed.port
@@ -564,6 +620,39 @@ def _build_snippet(text: str, query_lower: str, length: int = 320) -> str:
     start = max(idx - 100, 0)
     end = min(start + length, len(normalized))
     return normalized[start:end]
+
+
+def _heading_text(text: str) -> str:
+    headings = [
+        line.strip().lstrip("#").strip()
+        for line in text.splitlines()
+        if line.strip().startswith("#")
+    ]
+    return " ".join(headings).lower()
+
+
+def _score_document(doc: Document, query_lower: str, tokens: list[str]) -> int:
+    title_lower = doc.title.lower()
+    headings_lower = _heading_text(doc.text)
+    body_lower = doc.text.lower()
+    score = 0
+
+    if query_lower in title_lower:
+        score += 120
+    elif query_lower in headings_lower:
+        score += 80
+    elif query_lower in body_lower:
+        score += 40
+
+    for token in tokens:
+        if token in title_lower:
+            score += 25
+        elif token in headings_lower:
+            score += 10
+        elif token in body_lower:
+            score += 3
+
+    return score
 
 
 def _redact_payload(
@@ -623,6 +712,50 @@ def _redact_payload(
         return "REDACTED_PUBLIC_IP"
 
     return value
+
+
+def _redact_document_text(
+    text: str,
+    include_macs: bool,
+    include_serials: bool,
+    include_public_ip: bool,
+) -> str:
+    redacted = text
+
+    # Key-value style sensitive fields (JSON or plain text) are always redacted.
+    sensitive_key_pattern = (
+        r'(?i)("?(?:api_key|x_api_key|token|access_token|authorization|password|passphrase|'
+        r'x_passphrase|psk|x_psk|pre_shared_key|x_ipsec_pre_shared_key|owner|owner_name|ownername)"?'
+        r"\s*[:=]\s*)"
+        r'("[^"\n]*"|[^\s,\n]+)'
+    )
+    redacted = re.sub(sensitive_key_pattern, r'\1"REDACTED"', redacted)
+
+    if not include_macs:
+        redacted = re.sub(r"\b[0-9A-Fa-f]{2}(?::[0-9A-Fa-f]{2}){5}\b", "REDACTED", redacted)
+
+    if not include_serials:
+        serial_pattern = (
+            r'(?i)("?(?:serial|serial_number|serialnum|serial_no)"?\s*[:=]\s*)'
+            r'("[^"\n]*"|[^\s,\n]+)'
+        )
+        redacted = re.sub(serial_pattern, r'\1"REDACTED"', redacted)
+
+    if not include_public_ip:
+        redacted = re.sub(
+            r"\b\d{1,3}(?:\.\d{1,3}){3}\b",
+            _replace_public_ip_match,
+            redacted,
+        )
+
+    return redacted
+
+
+def _replace_public_ip_match(match: re.Match[str]) -> str:
+    candidate = match.group(0)
+    if _is_public_ip(candidate):
+        return "REDACTED_PUBLIC_IP"
+    return candidate
 
 
 def _looks_like_mac(value: str) -> bool:
