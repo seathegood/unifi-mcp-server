@@ -7,14 +7,18 @@ This project uses FastMCP and can be connected to ChatGPT in two distinct ways.
 ### Use Deep Research when
 
 - You want read-only research workflows
-- You expose only `search` and `fetch` MCP tools
+- You expose only `health_check`, `search`, and `fetch` MCP tools
 - You want safer retrieval-focused analysis of UniFi data
+
+Set `MCP_PROFILE=deep-research` for this deployment mode.
 
 ### Use Developer Mode when
 
 - You need interactive operations, analysis, and iteration
-- You need access to a broader toolset than `search` and `fetch`
+- You need access to the full UniFi MCP tool surface
 - You can run a remote MCP transport endpoint for ChatGPT
+
+Set `MCP_PROFILE=full` (default) for this mode.
 
 ## Transport Requirements
 

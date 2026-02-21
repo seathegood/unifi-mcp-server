@@ -93,6 +93,7 @@ site_manager_res = site_manager_resource.SiteManagerResource(settings)
 
 # MCP Tools
 RedactablePayload = TypeVar("RedactablePayload", dict, list)
+DEEP_RESEARCH_TOOL_NAMES = {"health_check", "search", "fetch"}
 
 
 def _redact_response(payload: RedactablePayload) -> RedactablePayload:
@@ -100,7 +101,25 @@ def _redact_response(payload: RedactablePayload) -> RedactablePayload:
     return redact_client_device_data(payload)  # type: ignore[return-value]
 
 
-@mcp.tool()
+def _is_tool_enabled(tool_name: str) -> bool:
+    """Return whether a tool should be exposed for the active profile."""
+    if settings.mcp_profile == "full":
+        return True
+    return tool_name in DEEP_RESEARCH_TOOL_NAMES
+
+
+def register_tool():
+    """Profile-aware FastMCP tool decorator wrapper."""
+
+    def _decorator(func):
+        if _is_tool_enabled(func.__name__):
+            return mcp.tool()(func)
+        return func
+
+    return _decorator
+
+
+@register_tool()
 async def health_check() -> dict[str, str]:
     """Health check endpoint to verify server is running.
 
@@ -114,13 +133,13 @@ async def health_check() -> dict[str, str]:
     }
 
 
-@mcp.tool()
+@register_tool()
 async def search(query: str) -> list[dict]:
     """Search generated UniFi configuration documents for Deep Research."""
     return await documents_tools.search_documents(query, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def fetch(id: str) -> dict:
     """Fetch a generated UniFi configuration document by id for Deep Research."""
     return await documents_tools.fetch_document(id, settings)
@@ -129,7 +148,7 @@ async def fetch(id: str) -> dict:
 # Register debug tool only if DEBUG is enabled
 if os.getenv("DEBUG", "").lower() in ("true", "1", "yes"):
 
-    @mcp.tool()
+    @register_tool()
     async def debug_api_request(endpoint: str, method: str = "GET") -> dict:
         """Debug tool to query arbitrary UniFi API endpoints.
 
@@ -209,28 +228,28 @@ async def get_networks_resource(site_id: str) -> str:
 
 
 # Device Management Tools
-@mcp.tool()
+@register_tool()
 async def get_device_details(site_id: str, device_id: str) -> dict:
     """Get detailed information for a specific device."""
     result = await devices_tools.get_device_details(site_id, device_id, settings)
     return _redact_response(result)
 
 
-@mcp.tool()
+@register_tool()
 async def get_device_statistics(site_id: str, device_id: str) -> dict:
     """Retrieve real-time statistics for a device."""
     result = await devices_tools.get_device_statistics(site_id, device_id, settings)
     return _redact_response(result)
 
 
-@mcp.tool()
+@register_tool()
 async def list_devices_by_type(site_id: str, device_type: str) -> list[dict]:
     """Filter devices by type (uap, usw, ugw)."""
     result = await devices_tools.list_devices_by_type(site_id, device_type, settings)
     return _redact_response(result)
 
 
-@mcp.tool()
+@register_tool()
 async def search_devices(site_id: str, query: str) -> list[dict]:
     """Search devices by name, MAC, or IP address."""
     result = await devices_tools.search_devices(site_id, query, settings)
@@ -238,28 +257,28 @@ async def search_devices(site_id: str, query: str) -> list[dict]:
 
 
 # Client Management Tools
-@mcp.tool()
+@register_tool()
 async def get_client_details(site_id: str, client_mac: str) -> dict:
     """Get detailed information for a specific client."""
     result = await clients_tools.get_client_details(site_id, client_mac, settings)
     return _redact_response(result)
 
 
-@mcp.tool()
+@register_tool()
 async def get_client_statistics(site_id: str, client_mac: str) -> dict:
     """Retrieve bandwidth and connection statistics for a client."""
     result = await clients_tools.get_client_statistics(site_id, client_mac, settings)
     return _redact_response(result)
 
 
-@mcp.tool()
+@register_tool()
 async def list_active_clients(site_id: str) -> list[dict]:
     """List currently connected clients."""
     result = await clients_tools.list_active_clients(site_id, settings)
     return _redact_response(result)
 
 
-@mcp.tool()
+@register_tool()
 async def search_clients(site_id: str, query: str) -> list[dict]:
     """Search clients by MAC, IP, or hostname."""
     result = await clients_tools.search_clients(site_id, query, settings)
@@ -267,57 +286,57 @@ async def search_clients(site_id: str, query: str) -> list[dict]:
 
 
 # Network Information Tools
-@mcp.tool()
+@register_tool()
 async def get_network_details(site_id: str, network_id: str) -> dict:
     """Get detailed network configuration."""
     return await networks_tools.get_network_details(site_id, network_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def list_vlans(site_id: str) -> list[dict]:
     """List all VLANs in a site."""
     return await networks_tools.list_vlans(site_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def get_subnet_info(site_id: str, network_id: str) -> dict:
     """Get subnet and DHCP information for a network."""
     return await networks_tools.get_subnet_info(site_id, network_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def get_network_statistics(site_id: str) -> dict:
     """Retrieve network usage statistics for a site."""
     return await networks_tools.get_network_statistics(site_id, settings)
 
 
 # Site Management Tools
-@mcp.tool()
+@register_tool()
 async def get_site_details(site_id: str) -> dict:
     """Get detailed site information."""
     return await sites_tools.get_site_details(site_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def list_all_sites() -> list[dict]:
     """List all accessible sites."""
     return await sites_tools.list_sites(settings)
 
 
-@mcp.tool()
+@register_tool()
 async def get_site_statistics(site_id: str) -> dict:
     """Retrieve site-wide statistics."""
     return await sites_tools.get_site_statistics(site_id, settings)
 
 
 # Firewall Management Tools (Phase 4)
-@mcp.tool()
+@register_tool()
 async def list_firewall_rules(site_id: str) -> list[dict]:
     """List all firewall rules in a site."""
     return await firewall_tools.list_firewall_rules(site_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def create_firewall_rule(
     site_id: str,
     name: str,
@@ -346,7 +365,7 @@ async def create_firewall_rule(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def update_firewall_rule(
     site_id: str,
     rule_id: str,
@@ -377,7 +396,7 @@ async def update_firewall_rule(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def delete_firewall_rule(
     site_id: str, rule_id: str, confirm: bool = False, dry_run: bool = False
 ) -> dict:
@@ -386,7 +405,7 @@ async def delete_firewall_rule(
 
 
 # Backup and Restore Tools (Phase 4)
-@mcp.tool()
+@register_tool()
 async def trigger_backup(
     site_id: str,
     backup_type: str,
@@ -411,7 +430,7 @@ async def trigger_backup(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def list_backups(site_id: str) -> list[dict]:
     """List all available backups for a site.
 
@@ -424,7 +443,7 @@ async def list_backups(site_id: str) -> list[dict]:
     return await backups_tools.list_backups(site_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def get_backup_details(site_id: str, backup_filename: str) -> dict:
     """Get detailed information about a specific backup.
 
@@ -438,7 +457,7 @@ async def get_backup_details(site_id: str, backup_filename: str) -> dict:
     return await backups_tools.get_backup_details(site_id, backup_filename, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def download_backup(
     site_id: str,
     backup_filename: str,
@@ -461,7 +480,7 @@ async def download_backup(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def delete_backup(
     site_id: str,
     backup_filename: str,
@@ -485,7 +504,7 @@ async def delete_backup(
     return await backups_tools.delete_backup(site_id, backup_filename, settings, confirm, dry_run)
 
 
-@mcp.tool()
+@register_tool()
 async def restore_backup(
     site_id: str,
     backup_filename: str,
@@ -518,7 +537,7 @@ async def restore_backup(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def validate_backup(site_id: str, backup_filename: str) -> dict:
     """Validate a backup file before restore.
 
@@ -535,7 +554,7 @@ async def validate_backup(site_id: str, backup_filename: str) -> dict:
     return await backups_tools.validate_backup(site_id, backup_filename, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def get_backup_status(operation_id: str) -> dict:
     """Get the status of an ongoing or completed backup operation.
 
@@ -551,7 +570,7 @@ async def get_backup_status(operation_id: str) -> dict:
     return await backups_tools.get_backup_status(operation_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def get_restore_status(operation_id: str) -> dict:
     """Get the status of an ongoing or completed restore operation.
 
@@ -567,7 +586,7 @@ async def get_restore_status(operation_id: str) -> dict:
     return await backups_tools.get_restore_status(operation_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def schedule_backups(
     site_id: str,
     backup_type: str,
@@ -620,7 +639,7 @@ async def schedule_backups(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def get_backup_schedule(site_id: str) -> dict:
     """Get the configured automated backup schedule for a site.
 
@@ -637,7 +656,7 @@ async def get_backup_schedule(site_id: str) -> dict:
 
 
 # Network Configuration Tools (Phase 4)
-@mcp.tool()
+@register_tool()
 async def create_network(
     site_id: str,
     name: str,
@@ -672,7 +691,7 @@ async def create_network(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def update_network(
     site_id: str,
     network_id: str,
@@ -709,7 +728,7 @@ async def update_network(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def delete_network(
     site_id: str, network_id: str, confirm: bool = False, dry_run: bool = False
 ) -> dict:
@@ -720,7 +739,7 @@ async def delete_network(
 
 
 # Device Control Tools (Phase 4)
-@mcp.tool()
+@register_tool()
 async def restart_device(
     site_id: str, device_mac: str, confirm: bool = False, dry_run: bool = False
 ) -> dict:
@@ -730,7 +749,7 @@ async def restart_device(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def locate_device(
     site_id: str,
     device_mac: str,
@@ -744,7 +763,7 @@ async def locate_device(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def upgrade_device(
     site_id: str,
     device_mac: str,
@@ -759,7 +778,7 @@ async def upgrade_device(
 
 
 # Client Management Tools (Phase 4)
-@mcp.tool()
+@register_tool()
 async def block_client(
     site_id: str, client_mac: str, confirm: bool = False, dry_run: bool = False
 ) -> dict:
@@ -767,7 +786,7 @@ async def block_client(
     return await client_mgmt_tools.block_client(site_id, client_mac, settings, confirm, dry_run)
 
 
-@mcp.tool()
+@register_tool()
 async def unblock_client(
     site_id: str, client_mac: str, confirm: bool = False, dry_run: bool = False
 ) -> dict:
@@ -775,7 +794,7 @@ async def unblock_client(
     return await client_mgmt_tools.unblock_client(site_id, client_mac, settings, confirm, dry_run)
 
 
-@mcp.tool()
+@register_tool()
 async def reconnect_client(
     site_id: str, client_mac: str, confirm: bool = False, dry_run: bool = False
 ) -> dict:
@@ -784,7 +803,7 @@ async def reconnect_client(
 
 
 # WiFi Network (SSID) Management Tools (Phase 5)
-@mcp.tool()
+@register_tool()
 async def list_wlans(
     site_id: str, limit: int | None = None, offset: int | None = None
 ) -> list[dict]:
@@ -792,7 +811,7 @@ async def list_wlans(
     return await wifi_tools.list_wlans(site_id, settings, limit, offset)
 
 
-@mcp.tool()
+@register_tool()
 async def create_wlan(
     site_id: str,
     name: str,
@@ -825,7 +844,7 @@ async def create_wlan(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def update_wlan(
     site_id: str,
     wlan_id: str,
@@ -860,7 +879,7 @@ async def update_wlan(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def delete_wlan(
     site_id: str, wlan_id: str, confirm: bool = False, dry_run: bool = False
 ) -> dict:
@@ -868,14 +887,14 @@ async def delete_wlan(
     return await wifi_tools.delete_wlan(site_id, wlan_id, settings, confirm, dry_run)
 
 
-@mcp.tool()
+@register_tool()
 async def get_wlan_statistics(site_id: str, wlan_id: str | None = None) -> dict:
     """Get WiFi usage statistics for a site or specific WLAN."""
     return await wifi_tools.get_wlan_statistics(site_id, settings, wlan_id)
 
 
 # Port Forwarding Management Tools (Phase 5)
-@mcp.tool()
+@register_tool()
 async def list_port_forwards(
     site_id: str, limit: int | None = None, offset: int | None = None
 ) -> list[dict]:
@@ -883,7 +902,7 @@ async def list_port_forwards(
     return await port_fwd_tools.list_port_forwards(site_id, settings, limit, offset)
 
 
-@mcp.tool()
+@register_tool()
 async def create_port_forward(
     site_id: str,
     name: str,
@@ -914,7 +933,7 @@ async def create_port_forward(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def delete_port_forward(
     site_id: str, rule_id: str, confirm: bool = False, dry_run: bool = False
 ) -> dict:
@@ -923,13 +942,13 @@ async def delete_port_forward(
 
 
 # DPI Statistics Tools (Phase 5)
-@mcp.tool()
+@register_tool()
 async def get_dpi_statistics(site_id: str, time_range: str = "24h") -> dict:
     """Get Deep Packet Inspection statistics for a site."""
     return await dpi_tools.get_dpi_statistics(site_id, settings, time_range)
 
 
-@mcp.tool()
+@register_tool()
 async def list_top_applications(
     site_id: str, limit: int = 10, time_range: str = "24h"
 ) -> list[dict]:
@@ -937,7 +956,7 @@ async def list_top_applications(
     return await dpi_tools.list_top_applications(site_id, settings, limit, time_range)
 
 
-@mcp.tool()
+@register_tool()
 async def get_client_dpi(
     site_id: str,
     client_mac: str,
@@ -951,14 +970,14 @@ async def get_client_dpi(
 
 
 # Application Information Tool
-@mcp.tool()
+@register_tool()
 async def get_application_info() -> dict:
     """Get UniFi Network application information."""
     return await application_tools.get_application_info(settings)
 
 
 # Pending Devices and Adoption Tools
-@mcp.tool()
+@register_tool()
 async def list_pending_devices(
     site_id: str, limit: int | None = None, offset: int | None = None
 ) -> list[dict]:
@@ -967,7 +986,7 @@ async def list_pending_devices(
     return _redact_response(result)
 
 
-@mcp.tool()
+@register_tool()
 async def adopt_device(
     site_id: str,
     device_id: str,
@@ -979,7 +998,7 @@ async def adopt_device(
     return await devices_tools.adopt_device(site_id, device_id, settings, name, confirm, dry_run)
 
 
-@mcp.tool()
+@register_tool()
 async def execute_port_action(
     site_id: str,
     device_id: str,
@@ -996,7 +1015,7 @@ async def execute_port_action(
 
 
 # Enhanced Client Actions
-@mcp.tool()
+@register_tool()
 async def authorize_guest(
     site_id: str,
     client_mac: str,
@@ -1019,7 +1038,7 @@ async def authorize_guest(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def limit_bandwidth(
     site_id: str,
     client_mac: str,
@@ -1035,7 +1054,7 @@ async def limit_bandwidth(
 
 
 # Hotspot Voucher Tools
-@mcp.tool()
+@register_tool()
 async def list_vouchers(
     site_id: str,
     limit: int | None = None,
@@ -1046,13 +1065,13 @@ async def list_vouchers(
     return await vouchers_tools.list_vouchers(site_id, settings, limit, offset, filter_expr)
 
 
-@mcp.tool()
+@register_tool()
 async def get_voucher(site_id: str, voucher_id: str) -> dict:
     """Get details for a specific voucher."""
     return await vouchers_tools.get_voucher(site_id, voucher_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def create_vouchers(
     site_id: str,
     count: int,
@@ -1081,7 +1100,7 @@ async def create_vouchers(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def delete_voucher(
     site_id: str, voucher_id: str, confirm: bool = False, dry_run: bool = False
 ) -> dict:
@@ -1089,7 +1108,7 @@ async def delete_voucher(
     return await vouchers_tools.delete_voucher(site_id, voucher_id, settings, confirm, dry_run)
 
 
-@mcp.tool()
+@register_tool()
 async def bulk_delete_vouchers(
     site_id: str, filter_expr: str, confirm: bool = False, dry_run: bool = False
 ) -> dict:
@@ -1100,19 +1119,19 @@ async def bulk_delete_vouchers(
 
 
 # RADIUS Profile Tools
-@mcp.tool()
+@register_tool()
 async def list_radius_profiles(site_id: str) -> list[dict]:
     """List all RADIUS profiles for a site."""
     return await radius_tools.list_radius_profiles(site_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def get_radius_profile(site_id: str, profile_id: str) -> dict:
     """Get details for a specific RADIUS profile."""
     return await radius_tools.get_radius_profile(site_id, profile_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def create_radius_profile(
     site_id: str,
     name: str,
@@ -1145,7 +1164,7 @@ async def create_radius_profile(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def update_radius_profile(
     site_id: str,
     profile_id: str,
@@ -1180,7 +1199,7 @@ async def update_radius_profile(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def delete_radius_profile(
     site_id: str, profile_id: str, confirm: bool = False, dry_run: bool = False
 ) -> dict:
@@ -1189,13 +1208,13 @@ async def delete_radius_profile(
 
 
 # RADIUS Account Tools
-@mcp.tool()
+@register_tool()
 async def list_radius_accounts(site_id: str) -> list[dict]:
     """List all RADIUS accounts for a site."""
     return await radius_tools.list_radius_accounts(site_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def create_radius_account(
     site_id: str,
     username: str,
@@ -1212,7 +1231,7 @@ async def create_radius_account(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def delete_radius_account(
     site_id: str, account_id: str, confirm: bool = False, dry_run: bool = False
 ) -> dict:
@@ -1221,13 +1240,13 @@ async def delete_radius_account(
 
 
 # Guest Portal Tools
-@mcp.tool()
+@register_tool()
 async def get_guest_portal_config(site_id: str) -> dict:
     """Get guest portal configuration for a site."""
     return await radius_tools.get_guest_portal_config(site_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def configure_guest_portal(
     site_id: str,
     portal_title: str | None = None,
@@ -1259,13 +1278,13 @@ async def configure_guest_portal(
 
 
 # Hotspot Package Tools
-@mcp.tool()
+@register_tool()
 async def list_hotspot_packages(site_id: str) -> list[dict]:
     """List all hotspot packages for a site."""
     return await radius_tools.list_hotspot_packages(site_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def create_hotspot_package(
     site_id: str,
     name: str,
@@ -1296,7 +1315,7 @@ async def create_hotspot_package(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def delete_hotspot_package(
     site_id: str, package_id: str, confirm: bool = False, dry_run: bool = False
 ) -> dict:
@@ -1307,13 +1326,13 @@ async def delete_hotspot_package(
 
 
 # Firewall Zone Tools
-@mcp.tool()
+@register_tool()
 async def list_firewall_zones(site_id: str) -> list[dict]:
     """List all firewall zones for a site."""
     return await firewall_zones_tools.list_firewall_zones(site_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def create_firewall_zone(
     site_id: str,
     name: str,
@@ -1328,7 +1347,7 @@ async def create_firewall_zone(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def update_firewall_zone(
     site_id: str,
     firewall_zone_id: str,
@@ -1345,7 +1364,7 @@ async def update_firewall_zone(
 
 
 # QoS Profile Management Tools
-@mcp.tool()
+@register_tool()
 async def list_qos_profiles(
     site_id: str,
     limit: int = 100,
@@ -1355,13 +1374,13 @@ async def list_qos_profiles(
     return await qos_tools.list_qos_profiles(site_id, settings, limit, offset)
 
 
-@mcp.tool()
+@register_tool()
 async def get_qos_profile(site_id: str, profile_id: str) -> dict:
     """Get details for a specific QoS profile."""
     return await qos_tools.get_qos_profile(site_id, profile_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def create_qos_profile(
     site_id: str,
     name: str,
@@ -1410,7 +1429,7 @@ async def create_qos_profile(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def update_qos_profile(
     site_id: str,
     profile_id: str,
@@ -1445,20 +1464,20 @@ async def update_qos_profile(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def delete_qos_profile(site_id: str, profile_id: str, confirm: bool = False) -> dict:
     """Delete a QoS profile (requires confirm=True)."""
     return await qos_tools.delete_qos_profile(site_id, profile_id, settings, confirm)
 
 
 # ProAV Profile Management Tools
-@mcp.tool()
+@register_tool()
 async def list_proav_templates() -> list[dict]:
     """List available ProAV protocol templates (Dante, Q-SYS, SDVoE, AVB, RAVENNA, NDI, SMPTE 2110) and reference profiles."""
     return await qos_tools.list_proav_templates(settings)
 
 
-@mcp.tool()
+@register_tool()
 async def create_proav_profile(
     site_id: str,
     protocol: str,
@@ -1487,20 +1506,20 @@ async def create_proav_profile(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def validate_proav_profile(protocol: str, bandwidth_mbps: int | None = None) -> dict:
     """Validate ProAV profile requirements and provide recommendations."""
     return await qos_tools.validate_proav_profile(protocol, settings, bandwidth_mbps)
 
 
 # Smart Queue Management Tools
-@mcp.tool()
+@register_tool()
 async def get_smart_queue_config(site_id: str) -> dict:
     """Get Smart Queue Management (SQM) configuration for bufferbloat mitigation."""
     return await qos_tools.get_smart_queue_config(site_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def configure_smart_queue(
     site_id: str,
     wan_id: str,
@@ -1525,14 +1544,14 @@ async def configure_smart_queue(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def disable_smart_queue(site_id: str, wan_id: str, confirm: bool = False) -> dict:
     """Disable Smart Queue Management (SQM) (requires confirm=True)."""
     return await qos_tools.disable_smart_queue(site_id, wan_id, settings, confirm)
 
 
 # Traffic Route Management Tools
-@mcp.tool()
+@register_tool()
 async def list_traffic_routes(
     site_id: str,
     limit: int = 100,
@@ -1542,7 +1561,7 @@ async def list_traffic_routes(
     return await qos_tools.list_traffic_routes(site_id, settings, limit, offset)
 
 
-@mcp.tool()
+@register_tool()
 async def create_traffic_route(
     site_id: str,
     name: str,
@@ -1583,7 +1602,7 @@ async def create_traffic_route(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def update_traffic_route(
     site_id: str,
     route_id: str,
@@ -1610,14 +1629,14 @@ async def update_traffic_route(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def delete_traffic_route(site_id: str, route_id: str, confirm: bool = False) -> dict:
     """Delete a traffic routing rule (requires confirm=True)."""
     return await qos_tools.delete_traffic_route(site_id, route_id, settings, confirm)
 
 
 # ACL Tools
-@mcp.tool()
+@register_tool()
 async def list_acl_rules(
     site_id: str,
     limit: int | None = None,
@@ -1628,13 +1647,13 @@ async def list_acl_rules(
     return await acls_tools.list_acl_rules(site_id, settings, limit, offset, filter_expr)
 
 
-@mcp.tool()
+@register_tool()
 async def get_acl_rule(site_id: str, acl_rule_id: str) -> dict:
     """Get details for a specific ACL rule."""
     return await acls_tools.get_acl_rule(site_id, acl_rule_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def create_acl_rule(
     site_id: str,
     name: str,
@@ -1677,7 +1696,7 @@ async def create_acl_rule(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def update_acl_rule(
     site_id: str,
     acl_rule_id: str,
@@ -1722,7 +1741,7 @@ async def update_acl_rule(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def delete_acl_rule(
     site_id: str, acl_rule_id: str, confirm: bool = False, dry_run: bool = False
 ) -> dict:
@@ -1731,20 +1750,20 @@ async def delete_acl_rule(
 
 
 # WAN Connections Tool
-@mcp.tool()
+@register_tool()
 async def list_wan_connections(site_id: str) -> list[dict]:
     """List all WAN connections for a site."""
     return await wans_tools.list_wan_connections(site_id, settings)
 
 
 # DPI and Country Tools
-@mcp.tool()
+@register_tool()
 async def list_dpi_categories() -> list[dict]:
     """List all DPI categories."""
     return await dpi_new_tools.list_dpi_categories(settings)
 
 
-@mcp.tool()
+@register_tool()
 async def list_dpi_applications(
     limit: int | None = None,
     offset: int | None = None,
@@ -1754,7 +1773,7 @@ async def list_dpi_applications(
     return await dpi_new_tools.list_dpi_applications(settings, limit, offset, filter_expr)
 
 
-@mcp.tool()
+@register_tool()
 async def list_countries(
     limit: int | None = None,
     offset: int | None = None,
@@ -1780,7 +1799,7 @@ async def list_countries(
 # Alternative: Configure zone policies manually in UniFi Console UI
 
 
-@mcp.tool()
+@register_tool()
 async def assign_network_to_zone(
     site_id: str,
     zone_id: str,
@@ -1794,13 +1813,13 @@ async def assign_network_to_zone(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def get_zone_networks(site_id: str, zone_id: str) -> list[dict]:
     """List all networks in a zone."""
     return await firewall_zones_tools.get_zone_networks(site_id, zone_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def delete_firewall_zone(
     site_id: str,
     zone_id: str,
@@ -1813,7 +1832,7 @@ async def delete_firewall_zone(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def unassign_network_from_zone(
     site_id: str,
     zone_id: str,
@@ -1839,7 +1858,7 @@ async def unassign_network_from_zone(
 
 
 # Traffic Flows Tools
-@mcp.tool()
+@register_tool()
 async def get_traffic_flows(
     site_id: str,
     source_ip: str | None = None,
@@ -1864,19 +1883,19 @@ async def get_traffic_flows(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def get_flow_statistics(site_id: str, time_range: str = "24h") -> dict:
     """Get aggregate flow statistics."""
     return await traffic_flows_tools.get_flow_statistics(site_id, settings, time_range)
 
 
-@mcp.tool()
+@register_tool()
 async def get_traffic_flow_details(site_id: str, flow_id: str) -> dict:
     """Get details for a specific traffic flow."""
     return await traffic_flows_tools.get_traffic_flow_details(site_id, flow_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def get_top_flows(
     site_id: str,
     limit: int = 10,
@@ -1887,7 +1906,7 @@ async def get_top_flows(
     return await traffic_flows_tools.get_top_flows(site_id, settings, limit, time_range, sort_by)
 
 
-@mcp.tool()
+@register_tool()
 async def get_flow_risks(
     site_id: str,
     time_range: str = "24h",
@@ -1897,7 +1916,7 @@ async def get_flow_risks(
     return await traffic_flows_tools.get_flow_risks(site_id, settings, time_range, min_risk_level)
 
 
-@mcp.tool()
+@register_tool()
 async def get_flow_trends(
     site_id: str,
     time_range: str = "7d",
@@ -1907,7 +1926,7 @@ async def get_flow_trends(
     return await traffic_flows_tools.get_flow_trends(site_id, settings, time_range, interval)
 
 
-@mcp.tool()
+@register_tool()
 async def filter_traffic_flows(
     site_id: str,
     filter_expression: str,
@@ -1921,7 +1940,7 @@ async def filter_traffic_flows(
 
 
 # Traffic Matching Lists Tools
-@mcp.tool()
+@register_tool()
 async def list_traffic_matching_lists(
     site_id: str,
     limit: int | None = None,
@@ -1931,13 +1950,13 @@ async def list_traffic_matching_lists(
     return await tml_tools.list_traffic_matching_lists(site_id, settings, limit, offset)
 
 
-@mcp.tool()
+@register_tool()
 async def get_traffic_matching_list(site_id: str, list_id: str) -> dict:
     """Get details for a specific traffic matching list."""
     return await tml_tools.get_traffic_matching_list(site_id, list_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def create_traffic_matching_list(
     site_id: str,
     list_type: str,
@@ -1952,7 +1971,7 @@ async def create_traffic_matching_list(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def update_traffic_matching_list(
     site_id: str,
     list_id: str,
@@ -1968,7 +1987,7 @@ async def update_traffic_matching_list(
     )
 
 
-@mcp.tool()
+@register_tool()
 async def delete_traffic_matching_list(
     site_id: str,
     list_id: str,
@@ -1982,7 +2001,7 @@ async def delete_traffic_matching_list(
 
 
 # Network Topology Tools
-@mcp.tool()
+@register_tool()
 async def get_network_topology(
     site_id: str,
     include_coordinates: bool = False,
@@ -2004,7 +2023,7 @@ async def get_network_topology(
     return _redact_response(result)
 
 
-@mcp.tool()
+@register_tool()
 async def get_device_connections(
     site_id: str,
     device_id: str | None = None,
@@ -2025,7 +2044,7 @@ async def get_device_connections(
     return _redact_response(result)
 
 
-@mcp.tool()
+@register_tool()
 async def get_port_mappings(
     site_id: str,
     device_id: str,
@@ -2046,7 +2065,7 @@ async def get_port_mappings(
     return _redact_response(result)
 
 
-@mcp.tool()
+@register_tool()
 async def export_topology(
     site_id: str,
     format: str,
@@ -2066,7 +2085,7 @@ async def export_topology(
     return await topology_tools.export_topology(site_id, format, settings)  # type: ignore
 
 
-@mcp.tool()
+@register_tool()
 async def get_topology_statistics(
     site_id: str,
 ) -> dict:
@@ -2086,7 +2105,7 @@ async def get_topology_statistics(
 
 
 # VPN Management Tools
-@mcp.tool()
+@register_tool()
 async def list_vpn_tunnels(
     site_id: str,
     limit: int | None = None,
@@ -2096,7 +2115,7 @@ async def list_vpn_tunnels(
     return await vpn_tools.list_vpn_tunnels(site_id, settings, limit, offset)
 
 
-@mcp.tool()
+@register_tool()
 async def list_vpn_servers(
     site_id: str,
     limit: int | None = None,
@@ -2106,19 +2125,19 @@ async def list_vpn_servers(
     return await vpn_tools.list_vpn_servers(site_id, settings, limit, offset)
 
 
-@mcp.tool()
+@register_tool()
 async def list_site_to_site_vpns(site_id: str) -> list[dict]:
     """List all site-to-site IPsec VPN configurations."""
     return await site_vpn_tools.list_site_to_site_vpns(site_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def get_site_to_site_vpn(site_id: str, vpn_id: str) -> dict:
     """Get details for a specific site-to-site VPN."""
     return await site_vpn_tools.get_site_to_site_vpn(site_id, vpn_id, settings)
 
 
-@mcp.tool()
+@register_tool()
 async def update_site_to_site_vpn(
     site_id: str,
     vpn_id: str,
@@ -2146,7 +2165,7 @@ async def update_site_to_site_vpn(
 
 
 # Reference Data Tools
-@mcp.tool()
+@register_tool()
 async def list_device_tags(
     site_id: str,
     limit: int | None = None,
@@ -2157,50 +2176,50 @@ async def list_device_tags(
 
 
 # Site Manager Tools
-@mcp.tool()
+@register_tool()
 async def list_all_sites_aggregated() -> list[dict]:
     """List all sites with aggregated stats from Site Manager API."""
     return await site_manager_tools.list_all_sites_aggregated(settings)
 
 
-@mcp.tool()
+@register_tool()
 async def get_internet_health(site_id: str | None = None) -> dict:
     """Get internet health metrics across sites."""
     return await site_manager_tools.get_internet_health(settings, site_id)
 
 
-@mcp.tool()
+@register_tool()
 async def get_site_health_summary(site_id: str | None = None) -> dict:
     """Get health summary for all sites or a specific site."""
     return await site_manager_tools.get_site_health_summary(settings, site_id)  # type: ignore[return-value]
 
 
-@mcp.tool()
+@register_tool()
 async def get_cross_site_statistics() -> dict:
     """Get aggregate statistics across multiple sites."""
     return await site_manager_tools.get_cross_site_statistics(settings)
 
 
-@mcp.tool()
+@register_tool()
 async def list_vantage_points() -> list[dict]:
     """List all Vantage Points."""
     return await site_manager_tools.list_vantage_points(settings)
 
 
-@mcp.tool()
+@register_tool()
 async def get_site_inventory(site_id: str | None = None) -> dict:
     """Get comprehensive inventory for a site or all sites."""
     result = await site_manager_tools.get_site_inventory(settings, site_id)
     return _redact_response(result)
 
 
-@mcp.tool()
+@register_tool()
 async def compare_site_performance() -> dict:
     """Compare performance metrics across all sites."""
     return await site_manager_tools.compare_site_performance(settings)
 
 
-@mcp.tool()
+@register_tool()
 async def search_across_sites(query: str, search_type: str = "all") -> dict:
     """Search for resources across all sites (device/client/network)."""
     result = await site_manager_tools.search_across_sites(settings, query, search_type)
@@ -2264,6 +2283,7 @@ def main() -> None:
     logger.info(f"API Type: {settings.api_type.value}")
     logger.info(f"Base URL: {settings.base_url}")
     logger.info(f"MCP transport: {settings.mcp_transport}")
+    logger.info(f"MCP profile: {settings.mcp_profile}")
     logger.info("Server ready to handle requests")
 
     if settings.mcp_transport == "http":
