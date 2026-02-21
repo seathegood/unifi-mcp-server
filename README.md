@@ -54,6 +54,47 @@ For Compose-based deployment with Redis/Toolbox, see `docker-compose.yml` and `.
 - Reliability: `UNIFI_RATE_LIMIT_REQUESTS`, `UNIFI_RATE_LIMIT_PERIOD`, `UNIFI_MAX_RETRIES`, `UNIFI_RETRY_BACKOFF_FACTOR`, `UNIFI_REQUEST_TIMEOUT`
 - Cache/Logging/Audit: `UNIFI_CACHE_ENABLED`, `UNIFI_CACHE_TTL`, `LOG_LEVEL` (`info`/`debug` etc., case-insensitive), `LOG_API_REQUESTS`, `UNIFI_AUDIT_LOG_ENABLED`
 
+## Quick validation
+
+Run repository readiness checks for ChatGPT connector use:
+
+```bash
+scripts/doctor.sh
+```
+
+Optional local runtime probe (when the MCP HTTP endpoint is running):
+
+```bash
+DOCTOR_PING_LOCAL=1 DOCTOR_MCP_URL=http://127.0.0.1:8080/mcp scripts/doctor.sh
+```
+
+Example output:
+
+```text
+== Required docs and scripts ==
+PASS: Found docs/chatgpt.md
+PASS: Found docs/connector-readiness.md
+PASS: Found scripts/doctor.sh
+...
+Summary: 12 passed, 1 warnings, 0 failed
+```
+
+See `docs/connector-readiness.md` for the full QA checklist.
+
+## Assistant commands
+
+GitHub comment commands are available through `.github/workflows/assistant-dispatch.yml`.
+
+- `@assistant /review <optional context>`: runs PR/issue review flow (`gemini-review.yml`)
+- `@assistant /triage`: runs issue triage flow (`gemini-triage.yml`)
+- `@assistant <request>`: runs general assistant flow (`gemini-invoke.yml`)
+
+Slash form is also supported:
+
+- `/assistant /review <optional context>`
+- `/assistant /triage`
+- `/assistant <request>`
+
 ## Roadmap (fork)
 - MCP patterns for AI workflows (promptable automation, robust validation).
 - Container-first hardening (health checks, minimal env surface, secrets hygiene).

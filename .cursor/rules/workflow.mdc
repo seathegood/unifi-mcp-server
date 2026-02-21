@@ -11,7 +11,7 @@ alwaysApply: false
 1. Pull latest changes: `git pull origin main`
 2. Create feature branch: `git checkout -b feature/your-feature`
 3. Review existing patterns in similar files
-4. Read `CLAUDE.md` and `AGENTS.md` for project-specific AI assistant guidelines
+4. Read `AGENTS.md` for project-specific AI assistant guidelines
 
 ## During Development
 
