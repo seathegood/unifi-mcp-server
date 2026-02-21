@@ -29,6 +29,18 @@ This project uses FastMCP and can be connected to ChatGPT in two distinct ways.
 - Start with read-only tools and add mutating tools only after policy review
 - Restrict network access and IP ranges for remote MCP endpoints
 
+## Tool Safety Conventions
+
+- Tool classification source of truth is `src/tools/registry.py`.
+- Human-readable inventory is `docs/tool-classification.md`.
+- `read_only` tools are safe to expose by default.
+- `risky_read` tools are still read-only, but may return sensitive payloads.
+- `mutating` tools must follow plan/apply semantics and require explicit caller confirmation.
+- Future write workflow scaffolding is in `src/tools/change_control.py`:
+  - `plan_change(change_request) -> { plan_id, diff, warnings, confirmation_token, expires_at }`
+  - `apply_change(plan_id, confirmation_token) -> result`
+- `apply_change` rejects requests without a valid confirmation token.
+
 ## Minimal Smoke Test Prompts
 
 Use these prompts after connecting ChatGPT to your MCP endpoint.

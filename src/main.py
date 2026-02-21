@@ -2,6 +2,7 @@
 
 import asyncio
 import os
+from typing import TypeVar
 
 from agnost import config as agnost_config
 from agnost import track
@@ -39,6 +40,7 @@ from .tools import vpn as vpn_tools
 from .tools import wans as wans_tools
 from .tools import wifi as wifi_tools
 from .utils import get_logger
+from .utils.redaction import redact_client_device_data
 
 # Initialize settings
 settings = Settings()
@@ -90,6 +92,14 @@ site_manager_res = site_manager_resource.SiteManagerResource(settings)
 
 
 # MCP Tools
+RedactablePayload = TypeVar("RedactablePayload", dict, list)
+
+
+def _redact_response(payload: RedactablePayload) -> RedactablePayload:
+    """Apply centralized output redaction for sensitive client/device fields."""
+    return redact_client_device_data(payload)  # type: ignore[return-value]
+
+
 @mcp.tool()
 async def health_check() -> dict[str, str]:
     """Health check endpoint to verify server is running.
@@ -202,50 +212,58 @@ async def get_networks_resource(site_id: str) -> str:
 @mcp.tool()
 async def get_device_details(site_id: str, device_id: str) -> dict:
     """Get detailed information for a specific device."""
-    return await devices_tools.get_device_details(site_id, device_id, settings)
+    result = await devices_tools.get_device_details(site_id, device_id, settings)
+    return _redact_response(result)
 
 
 @mcp.tool()
 async def get_device_statistics(site_id: str, device_id: str) -> dict:
     """Retrieve real-time statistics for a device."""
-    return await devices_tools.get_device_statistics(site_id, device_id, settings)
+    result = await devices_tools.get_device_statistics(site_id, device_id, settings)
+    return _redact_response(result)
 
 
 @mcp.tool()
 async def list_devices_by_type(site_id: str, device_type: str) -> list[dict]:
     """Filter devices by type (uap, usw, ugw)."""
-    return await devices_tools.list_devices_by_type(site_id, device_type, settings)
+    result = await devices_tools.list_devices_by_type(site_id, device_type, settings)
+    return _redact_response(result)
 
 
 @mcp.tool()
 async def search_devices(site_id: str, query: str) -> list[dict]:
     """Search devices by name, MAC, or IP address."""
-    return await devices_tools.search_devices(site_id, query, settings)
+    result = await devices_tools.search_devices(site_id, query, settings)
+    return _redact_response(result)
 
 
 # Client Management Tools
 @mcp.tool()
 async def get_client_details(site_id: str, client_mac: str) -> dict:
     """Get detailed information for a specific client."""
-    return await clients_tools.get_client_details(site_id, client_mac, settings)
+    result = await clients_tools.get_client_details(site_id, client_mac, settings)
+    return _redact_response(result)
 
 
 @mcp.tool()
 async def get_client_statistics(site_id: str, client_mac: str) -> dict:
     """Retrieve bandwidth and connection statistics for a client."""
-    return await clients_tools.get_client_statistics(site_id, client_mac, settings)
+    result = await clients_tools.get_client_statistics(site_id, client_mac, settings)
+    return _redact_response(result)
 
 
 @mcp.tool()
 async def list_active_clients(site_id: str) -> list[dict]:
     """List currently connected clients."""
-    return await clients_tools.list_active_clients(site_id, settings)
+    result = await clients_tools.list_active_clients(site_id, settings)
+    return _redact_response(result)
 
 
 @mcp.tool()
 async def search_clients(site_id: str, query: str) -> list[dict]:
     """Search clients by MAC, IP, or hostname."""
-    return await clients_tools.search_clients(site_id, query, settings)
+    result = await clients_tools.search_clients(site_id, query, settings)
+    return _redact_response(result)
 
 
 # Network Information Tools
@@ -928,7 +946,8 @@ async def get_client_dpi(
     offset: int | None = None,
 ) -> dict:
     """Get DPI statistics for a specific client."""
-    return await dpi_tools.get_client_dpi(site_id, client_mac, settings, time_range, limit, offset)
+    result = await dpi_tools.get_client_dpi(site_id, client_mac, settings, time_range, limit, offset)
+    return _redact_response(result)
 
 
 # Application Information Tool
@@ -944,7 +963,8 @@ async def list_pending_devices(
     site_id: str, limit: int | None = None, offset: int | None = None
 ) -> list[dict]:
     """List devices awaiting adoption on the specified site."""
-    return await devices_tools.list_pending_devices(site_id, settings, limit, offset)
+    result = await devices_tools.list_pending_devices(site_id, settings, limit, offset)
+    return _redact_response(result)
 
 
 @mcp.tool()
@@ -1980,7 +2000,8 @@ async def get_network_topology(
     Returns:
         Network diagram with nodes, connections, and statistics
     """
-    return await topology_tools.get_network_topology(site_id, settings, include_coordinates)
+    result = await topology_tools.get_network_topology(site_id, settings, include_coordinates)
+    return _redact_response(result)
 
 
 @mcp.tool()
@@ -2000,7 +2021,8 @@ async def get_device_connections(
     Returns:
         List of connection dictionaries
     """
-    return await topology_tools.get_device_connections(site_id, device_id, settings)
+    result = await topology_tools.get_device_connections(site_id, device_id, settings)
+    return _redact_response(result)
 
 
 @mcp.tool()
@@ -2020,7 +2042,8 @@ async def get_port_mappings(
     Returns:
         Dictionary with device_id and port mapping information
     """
-    return await topology_tools.get_port_mappings(site_id, device_id, settings)
+    result = await topology_tools.get_port_mappings(site_id, device_id, settings)
+    return _redact_response(result)
 
 
 @mcp.tool()
@@ -2167,7 +2190,8 @@ async def list_vantage_points() -> list[dict]:
 @mcp.tool()
 async def get_site_inventory(site_id: str | None = None) -> dict:
     """Get comprehensive inventory for a site or all sites."""
-    return await site_manager_tools.get_site_inventory(settings, site_id)  # type: ignore[return-value]
+    result = await site_manager_tools.get_site_inventory(settings, site_id)
+    return _redact_response(result)
 
 
 @mcp.tool()
@@ -2179,7 +2203,8 @@ async def compare_site_performance() -> dict:
 @mcp.tool()
 async def search_across_sites(query: str, search_type: str = "all") -> dict:
     """Search for resources across all sites (device/client/network)."""
-    return await site_manager_tools.search_across_sites(settings, query, search_type)
+    result = await site_manager_tools.search_across_sites(settings, query, search_type)
+    return _redact_response(result)
 
 
 # Additional MCP Resources

@@ -52,6 +52,8 @@ All AI agents must adhere to these fundamental principles:
 - For ChatGPT connector setup, transport expectations, and security controls, see `docs/chatgpt.md`.
 - Prefer read-only tool exposure for Deep Research workflows.
 - Use authenticated remote transport endpoints for Developer Mode workflows.
+- Use `src/tools/registry.py` and `docs/tool-classification.md` as the canonical tool safety map.
+- Treat `mutating` tools as plan/apply only: create plan first, then require explicit confirmation token for apply.
 
 ## File Structure and Organization
 
@@ -349,6 +351,17 @@ pre-commit install
 # Manually check for secrets
 detect-secrets scan
 ```
+
+### Tool Safety Policy
+
+- Tool classes:
+  - `read_only`: no side effects.
+  - `risky_read`: no side effects, but payload may contain sensitive client/device/site data.
+  - `mutating`: changes state or triggers side effects.
+- All client/device detail responses must pass through centralized redaction in `src/utils/redaction.py`.
+- Future mutating integrations must use `src/tools/change_control.py`:
+  - `plan_change(change_request)` to stage and inspect proposed changes.
+  - `apply_change(plan_id, confirmation_token)` to execute only after explicit confirmation.
 
 ## Environment & UniFi API Guidelines
 

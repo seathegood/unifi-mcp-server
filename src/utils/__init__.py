@@ -31,6 +31,7 @@ from .sanitize import (
     sanitize_log_message,
     sanitize_sensitive_data,
 )
+from .redaction import redact_client_device_data
 from .validators import (
     validate_confirmation,
     validate_device_id,
@@ -67,6 +68,7 @@ __all__ = [
     "sanitize_list",
     "sanitize_log_message",
     "sanitize_sensitive_data",
+    "redact_client_device_data",
     # Validators
     "validate_mac_address",
     "validate_ip_address",
