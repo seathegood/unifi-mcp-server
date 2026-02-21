@@ -1,5 +1,6 @@
 """Main entry point for UniFi MCP Server."""
 
+import asyncio
 import os
 
 from agnost import config as agnost_config
@@ -2224,10 +2225,73 @@ def main() -> None:
     logger.info("Starting UniFi MCP Server...")
     logger.info(f"API Type: {settings.api_type.value}")
     logger.info(f"Base URL: {settings.base_url}")
+    logger.info(f"MCP transport: {settings.mcp_transport}")
     logger.info("Server ready to handle requests")
 
-    # Start the FastMCP server
-    mcp.run()
+    if settings.mcp_transport == "http":
+        logger.info(f"HTTP endpoint: http://{settings.mcp_host}:{settings.mcp_port}{settings.mcp_path}")
+
+        # Keep logging safe: access logs include method/path/status only, no headers/tokens.
+        uvicorn_config = {"access_log": True}
+        log_level = settings.log_level.lower()
+
+        run_http_async = getattr(mcp, "run_http_async", None)
+        if callable(run_http_async):
+            try:
+                asyncio.run(
+                    run_http_async(
+                        transport="streamable-http",
+                        host=settings.mcp_host,
+                        port=settings.mcp_port,
+                        path=settings.mcp_path,
+                        log_level=log_level,
+                        uvicorn_config=uvicorn_config,
+                    )
+                )
+            except TypeError:
+                logger.warning(
+                    "Installed FastMCP does not support configurable HTTP path; falling back to default path."
+                )
+                asyncio.run(
+                    run_http_async(
+                        transport="streamable-http",
+                        host=settings.mcp_host,
+                        port=settings.mcp_port,
+                        log_level=log_level,
+                        uvicorn_config=uvicorn_config,
+                    )
+                )
+            return
+
+        # Compatibility fallback for older FastMCP versions without run_http_async.
+        try:
+            mcp.run(
+                transport="streamable-http",
+                host=settings.mcp_host,
+                port=settings.mcp_port,
+                path=settings.mcp_path,
+                log_level=log_level,
+                uvicorn_config=uvicorn_config,
+            )
+        except TypeError:
+            logger.warning(
+                "Installed FastMCP does not support configurable HTTP path; falling back to default path."
+            )
+            mcp.run(
+                transport="streamable-http",
+                host=settings.mcp_host,
+                port=settings.mcp_port,
+                log_level=log_level,
+                uvicorn_config=uvicorn_config,
+            )
+        return
+
+    # STDIO remains the default transport for local MCP client compatibility.
+    try:
+        mcp.run(transport="stdio", log_level=settings.log_level.lower())
+    except TypeError:
+        # Compatibility fallback for older FastMCP versions.
+        mcp.run()
 
 
 if __name__ == "__main__":

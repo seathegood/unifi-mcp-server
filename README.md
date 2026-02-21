@@ -26,11 +26,20 @@ This fork explores MCP development patterns for AI workflows while maintaining a
 # pull (replace tag as needed when first forked release is cut)
 docker pull ghcr.io/seathegood/unifi-mcp-server:latest
 
-# run with env contract (example: local gateway)
+# run in STDIO mode (default; local MCP clients)
 docker run -i --rm \
   -e UNIFI_API_KEY=your-api-key \
   -e UNIFI_API_TYPE=local \
   -e UNIFI_LOCAL_HOST=192.168.1.1 \
+  ghcr.io/seathegood/unifi-mcp-server:latest
+
+# run in Streamable HTTP mode (remote MCP clients like ChatGPT)
+docker run --rm -p 8080:8080 \
+  -e UNIFI_API_KEY=your-api-key \
+  -e MCP_TRANSPORT=http \
+  -e MCP_HOST=0.0.0.0 \
+  -e MCP_PORT=8080 \
+  -e MCP_PATH=/mcp \
   ghcr.io/seathegood/unifi-mcp-server:latest
 ```
 
@@ -41,8 +50,9 @@ For Compose-based deployment with Redis/Toolbox, see `docker-compose.yml` and `.
 - `UNIFI_CLOUD_API_URL`: base URL for cloud APIs
 - `UNIFI_LOCAL_*`: `UNIFI_LOCAL_HOST`, `UNIFI_LOCAL_PORT`, `UNIFI_LOCAL_VERIFY_SSL`
 - `UNIFI_DEFAULT_SITE`, `UNIFI_SITE_MANAGER_ENABLED`
+- MCP transport: `MCP_TRANSPORT` (`stdio` or `http`), `MCP_HOST`, `MCP_PORT`, `MCP_PATH`
 - Reliability: `UNIFI_RATE_LIMIT_REQUESTS`, `UNIFI_RATE_LIMIT_PERIOD`, `UNIFI_MAX_RETRIES`, `UNIFI_RETRY_BACKOFF_FACTOR`, `UNIFI_REQUEST_TIMEOUT`
-- Cache/Logging/Audit: `UNIFI_CACHE_ENABLED`, `UNIFI_CACHE_TTL`, `LOG_LEVEL`, `LOG_API_REQUESTS`, `UNIFI_AUDIT_LOG_ENABLED`
+- Cache/Logging/Audit: `UNIFI_CACHE_ENABLED`, `UNIFI_CACHE_TTL`, `LOG_LEVEL` (`info`/`debug` etc., case-insensitive), `LOG_API_REQUESTS`, `UNIFI_AUDIT_LOG_ENABLED`
 
 ## Roadmap (fork)
 - MCP patterns for AI workflows (promptable automation, robust validation).
@@ -475,6 +485,24 @@ ChatGPT Developer Mode can use broader MCP toolsets and is a better fit for inte
 For setup details, transport examples, and security guidance, see [docs/chatgpt.md](docs/chatgpt.md).
 
 ## Usage
+
+### Run Commands
+
+```bash
+# STDIO mode (default)
+uv run python -m src.main
+
+# HTTP mode (Streamable HTTP on http://0.0.0.0:8080/mcp)
+MCP_TRANSPORT=http MCP_HOST=0.0.0.0 MCP_PORT=8080 MCP_PATH=/mcp uv run python -m src.main
+```
+
+### Local HTTP Smoke Test
+
+Start the server in HTTP mode, then connect an MCP client to:
+
+- `http://localhost:8080/mcp`
+
+If your FastMCP version does not support configurable path, the server falls back to the framework default path and logs a warning.
 
 ### With Local STDIO MCP Clients
 

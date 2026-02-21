@@ -127,8 +127,33 @@ class Settings(BaseSettings):
         validation_alias="UNIFI_CACHE_TTL",
     )
 
+    # MCP Transport Configuration
+    mcp_transport: Literal["stdio", "http"] = Field(
+        default="stdio",
+        description="MCP transport mode: stdio (default) or http",
+        validation_alias="MCP_TRANSPORT",
+    )
+
+    mcp_host: str = Field(
+        default="0.0.0.0",
+        description="MCP HTTP host bind address",
+        validation_alias="MCP_HOST",
+    )
+
+    mcp_port: int = Field(
+        default=8080,
+        description="MCP HTTP port",
+        validation_alias="MCP_PORT",
+    )
+
+    mcp_path: str = Field(
+        default="/mcp",
+        description="MCP HTTP endpoint path",
+        validation_alias="MCP_PATH",
+    )
+
     # Logging Configuration
-    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
+    log_level: str = Field(
         default="INFO",
         description="Logging level",
         validation_alias="LOG_LEVEL",
@@ -162,7 +187,32 @@ class Settings(BaseSettings):
             return v
         return APIType(v.lower())
 
-    @field_validator("local_port")
+    @field_validator("mcp_transport", mode="before")
+    @classmethod
+    def validate_mcp_transport(cls, v: str) -> str:
+        """Validate and normalize MCP transport."""
+        if isinstance(v, str):
+            normalized = v.lower()
+            if normalized in ("stdio", "http"):
+                return normalized
+        raise ValueError("MCP_TRANSPORT must be one of: stdio, http")
+
+    @field_validator("log_level", mode="before")
+    @classmethod
+    def validate_log_level(cls, v: str) -> str:
+        """Validate and normalize log level."""
+        if not isinstance(v, str):
+            raise ValueError("LOG_LEVEL must be a string")
+
+        normalized = v.upper()
+        valid_levels = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
+        if normalized not in valid_levels:
+            raise ValueError(
+                "LOG_LEVEL must be one of: debug, info, warning, error, critical"
+            )
+        return normalized
+
+    @field_validator("local_port", "mcp_port")
     @classmethod
     def validate_port(cls, v: int) -> int:
         """Validate port number is in valid range.
@@ -179,6 +229,16 @@ class Settings(BaseSettings):
         if not 1 <= v <= 65535:
             raise ValueError(f"Port must be between 1 and 65535, got {v}")
         return v
+
+    @field_validator("mcp_path")
+    @classmethod
+    def validate_mcp_path(cls, v: str) -> str:
+        """Normalize MCP path with a leading slash."""
+        if not v:
+            return "/mcp"
+        if v.startswith("/"):
+            return v
+        return f"/{v}"
 
     @model_validator(mode="after")
     def validate_local_configuration(self) -> "Settings":
