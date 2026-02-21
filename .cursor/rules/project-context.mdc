@@ -12,7 +12,7 @@ You are an expert Python developer working on a production-grade MCP (Model Cont
 
 ## AI Assistant Guidelines
 
-- Project-specific guidance for AI coding assistants is in `CLAUDE.md` and `AGENTS.md`
+- Project-specific guidance for AI coding assistants is in `AGENTS.md`
 - Follow the development workflow and coding standards documented in these files
 - Maintain consistency across all AI-assisted development
 
