@@ -172,6 +172,25 @@ class Settings(BaseSettings):
         validation_alias="UNIFI_AUDIT_LOG_ENABLED",
     )
 
+    # Deep Research document redaction flags
+    include_macs: bool = Field(
+        default=False,
+        description="Include MAC addresses in generated configuration documents",
+        validation_alias="INCLUDE_MACS",
+    )
+
+    include_serials: bool = Field(
+        default=False,
+        description="Include serial numbers in generated configuration documents",
+        validation_alias="INCLUDE_SERIALS",
+    )
+
+    include_public_ip: bool = Field(
+        default=False,
+        description="Include WAN/public IP addresses in generated configuration documents",
+        validation_alias="INCLUDE_PUBLIC_IP",
+    )
+
     @field_validator("api_type", mode="before")
     @classmethod
     def validate_api_type(cls, v: str) -> APIType:

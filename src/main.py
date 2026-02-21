@@ -17,6 +17,7 @@ from .tools import client_management as client_mgmt_tools
 from .tools import clients as clients_tools
 from .tools import device_control as device_control_tools
 from .tools import devices as devices_tools
+from .tools import documents as documents_tools
 from .tools import dpi as dpi_tools
 from .tools import dpi_tools as dpi_new_tools
 from .tools import firewall as firewall_tools
@@ -101,6 +102,18 @@ async def health_check() -> dict[str, str]:
         "version": "0.2.0",
         "api_type": settings.api_type.value,
     }
+
+
+@mcp.tool()
+async def search(query: str) -> list[dict]:
+    """Search generated UniFi configuration documents for Deep Research."""
+    return await documents_tools.search_documents(query, settings)
+
+
+@mcp.tool()
+async def fetch(id: str) -> dict:
+    """Fetch a generated UniFi configuration document by id for Deep Research."""
+    return await documents_tools.fetch_document(id, settings)
 
 
 # Register debug tool only if DEBUG is enabled

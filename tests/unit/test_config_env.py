@@ -35,6 +35,33 @@ def test_settings_with_new_env_names(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.mark.unit
+def test_document_redaction_flags_default_false(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("UNIFI_API_KEY", "key-new")
+    monkeypatch.setenv("UNIFI_API_TYPE", "cloud-ea")
+
+    settings = Settings()
+
+    assert settings.include_macs is False
+    assert settings.include_serials is False
+    assert settings.include_public_ip is False
+
+
+@pytest.mark.unit
+def test_document_redaction_flags_can_be_enabled(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("UNIFI_API_KEY", "key-new")
+    monkeypatch.setenv("UNIFI_API_TYPE", "cloud-ea")
+    monkeypatch.setenv("INCLUDE_MACS", "true")
+    monkeypatch.setenv("INCLUDE_SERIALS", "1")
+    monkeypatch.setenv("INCLUDE_PUBLIC_IP", "yes")
+
+    settings = Settings()
+
+    assert settings.include_macs is True
+    assert settings.include_serials is True
+    assert settings.include_public_ip is True
+
+
+@pytest.mark.unit
 def test_settings_with_legacy_env_names(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("UNIFI_API_KEY", "key-legacy")
     monkeypatch.setenv("UNIFI_API_TYPE", "local")
