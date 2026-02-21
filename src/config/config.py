@@ -152,6 +152,12 @@ class Settings(BaseSettings):
         validation_alias="MCP_PATH",
     )
 
+    mcp_profile: Literal["deep-research", "full"] = Field(
+        default="full",
+        description="MCP tool exposure profile: deep-research (minimal) or full (all tools)",
+        validation_alias="MCP_PROFILE",
+    )
+
     # Logging Configuration
     log_level: str = Field(
         default="INFO",
@@ -215,6 +221,16 @@ class Settings(BaseSettings):
             if normalized in ("stdio", "http"):
                 return normalized
         raise ValueError("MCP_TRANSPORT must be one of: stdio, http")
+
+    @field_validator("mcp_profile", mode="before")
+    @classmethod
+    def validate_mcp_profile(cls, v: str) -> str:
+        """Validate and normalize MCP profile."""
+        if isinstance(v, str):
+            normalized = v.strip().lower()
+            if normalized in ("deep-research", "full"):
+                return normalized
+        raise ValueError("MCP_PROFILE must be one of: deep-research, full")
 
     @field_validator("log_level", mode="before")
     @classmethod

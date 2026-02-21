@@ -311,6 +311,7 @@ class TestSettingsDefaults:
         assert settings.mcp_host == "0.0.0.0"
         assert settings.mcp_port == 8080
         assert settings.mcp_path == "/mcp"
+        assert settings.mcp_profile == "full"
 
     def test_custom_mcp_transport_settings(self, monkeypatch: pytest.MonkeyPatch):
         monkeypatch.setenv("UNIFI_API_KEY", "test-key")
@@ -318,11 +319,19 @@ class TestSettingsDefaults:
         monkeypatch.setenv("MCP_HOST", "127.0.0.1")
         monkeypatch.setenv("MCP_PORT", "9090")
         monkeypatch.setenv("MCP_PATH", "custom")
+        monkeypatch.setenv("MCP_PROFILE", "  DEEP-RESEARCH  ")
         settings = Settings()
         assert settings.mcp_transport == "http"
         assert settings.mcp_host == "127.0.0.1"
         assert settings.mcp_port == 9090
         assert settings.mcp_path == "/custom"
+        assert settings.mcp_profile == "deep-research"
+
+    def test_invalid_mcp_profile_raises(self, monkeypatch: pytest.MonkeyPatch):
+        monkeypatch.setenv("UNIFI_API_KEY", "test-key")
+        monkeypatch.setenv("MCP_PROFILE", "restricted")
+        with pytest.raises(ValueError, match="MCP_PROFILE must be one of"):
+            Settings()
 
     def test_default_audit_log_enabled(self, monkeypatch: pytest.MonkeyPatch):
         monkeypatch.setenv("UNIFI_API_KEY", "test-key")

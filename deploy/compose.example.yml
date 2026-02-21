@@ -10,6 +10,7 @@ services:
       MCP_HOST: 0.0.0.0
       MCP_PORT: 8080
       MCP_PATH: /mcp
+      MCP_PROFILE: deep-research
     expose:
       - "8080"
     # Traefik labels are examples only. Adjust names, entrypoints, certResolver,
