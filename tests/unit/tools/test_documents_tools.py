@@ -115,6 +115,9 @@ async def test_search_documents_returns_results_for_keyword(mock_settings: Magic
         assert results
         assert any(result["id"] == "wifi_ssids_security" for result in results)
         assert all("snippet" in result for result in results)
+        assert all("updated_at" in result for result in results)
+        assert all("site_scope" in result for result in results)
+        assert all("score" not in result for result in results)
 
 
 @pytest.mark.unit
@@ -126,8 +129,11 @@ async def test_fetch_document_returns_text_for_all_known_ids(mock_settings: Magi
         for doc_id in list_document_ids():
             doc = await fetch_document(doc_id, mock_settings)
             assert doc["id"] == doc_id
+            assert "updated_at" in doc
+            assert "site_scope" in doc
             assert isinstance(doc["text"], str)
             assert len(doc["text"]) > 0
+            assert "source" in doc
 
 
 @pytest.mark.unit
@@ -142,6 +148,7 @@ async def test_fetch_document_redaction_flags_work(mock_settings: MagicMock) -> 
     assert "ABCDEF123456" not in redacted["text"]
     assert "198.51.100.10" not in redacted["text"]
     assert "super-secret-psk" not in redacted["text"]
+    assert "Owner Name" not in redacted["text"]
 
     mock_settings.include_macs = True
     mock_settings.include_serials = True
@@ -156,3 +163,24 @@ async def test_fetch_document_redaction_flags_work(mock_settings: MagicMock) -> 
     assert "ABCDEF123456" in unredacted["text"]
     assert "198.51.100.10" in unredacted["text"]
     assert "super-secret-psk" not in unredacted["text"]
+    assert "Owner Name" not in unredacted["text"]
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_search_documents_default_limit_applies(mock_settings: MagicMock) -> None:
+    with patch("src.tools.documents.UniFiClient") as mock_client_class:
+        mock_client_class.return_value = _mock_client_for_data(_mock_api_data())
+        results = await search_documents("site", mock_settings)
+
+    assert len(results) <= 5
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_fetch_document_missing_id_returns_clear_error(mock_settings: MagicMock) -> None:
+    with patch("src.tools.documents.UniFiClient") as mock_client_class:
+        mock_client_class.return_value = _mock_client_for_data(_mock_api_data())
+
+        with pytest.raises(ValueError, match="Document 'not_a_real_doc' not found"):
+            await fetch_document("not_a_real_doc", mock_settings)
