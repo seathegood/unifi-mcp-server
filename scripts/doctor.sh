@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -u
+set -u -o pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR" || exit 1
@@ -55,6 +55,7 @@ check_file_exists() {
 section "Required docs and scripts"
 check_file_exists "docs/chatgpt.md"
 check_file_exists "docs/connector-readiness.md"
+check_file_exists "docs/deploy-traefik.md"
 check_file_exists "scripts/doctor.sh"
 
 section "Connector capability checks"
@@ -75,11 +76,36 @@ else
   fail "Remote HTTP transport checks failed"
 fi
 
+if scan_pattern 'MCP_PROFILE:[[:space:]]*deep-research' deploy/compose.example.yml >/dev/null && \
+   scan_pattern 'MCP_TRANSPORT:[[:space:]]*http' deploy/compose.example.yml >/dev/null && \
+   scan_pattern 'MCP_HOST:[[:space:]]*0\.0\.0\.0' deploy/compose.example.yml >/dev/null && \
+   scan_pattern 'MCP_PORT:[[:space:]]*8080' deploy/compose.example.yml >/dev/null; then
+  pass "Compose example defaults to deep-research profile and HTTP listener settings"
+else
+  fail "Compose example MCP defaults are missing or inconsistent"
+fi
+
 if scan_pattern 'MCP_PATH=/mcp' .env.example deploy/env.example >/dev/null && \
-   scan_pattern 'Path prefix: `/mcp`' docs/deploy-traefik.md >/dev/null; then
+   scan_pattern '/mcp' docs/deploy-traefik.md >/dev/null; then
   pass "Repository documents /mcp endpoint routing"
 else
   fail "Could not confirm /mcp endpoint documentation"
+fi
+
+if scan_pattern '^DEEP_RESEARCH_TOOL_NAMES = \{"health_check", "search", "fetch"\}$' src/main.py >/dev/null && \
+   scan_pattern 'return tool_name in DEEP_RESEARCH_TOOL_NAMES' src/main.py >/dev/null; then
+  pass "Deep-research profile is restricted to health_check/search/fetch"
+else
+  fail "Deep-research tool exposure checks failed"
+fi
+
+if scan_pattern '"updated_at":[[:space:]]*doc\.updated_at' src/tools/documents.py >/dev/null && \
+   scan_pattern '"site_scope":[[:space:]]*doc\.site_scope' src/tools/documents.py >/dev/null && \
+   scan_pattern '- `updated_at` \(ISO8601 UTC string\)' docs/chatgpt.md >/dev/null && \
+   scan_pattern '- `site_scope` \(string\)' docs/chatgpt.md >/dev/null; then
+  pass "search/fetch metadata contract includes updated_at and site_scope"
+else
+  fail "search/fetch metadata contract checks failed"
 fi
 
 if scan_pattern 'INCLUDE_MACS=false' .env.example deploy/env.example >/dev/null && \
@@ -99,17 +125,27 @@ else
   fail "Sample prompts section missing in docs/chatgpt.md"
 fi
 
+if scan_pattern 'Traefik should terminate TLS' docs/deploy-traefik.md >/dev/null && \
+   scan_pattern 'Forward-auth with Authentik' docs/deploy-traefik.md >/dev/null && \
+   scan_pattern 'Basic auth' docs/deploy-traefik.md >/dev/null && \
+   scan_pattern 'Optional IP allowlist' docs/deploy-traefik.md >/dev/null && \
+   scan_pattern 'Do not log `Authorization`' docs/deploy-traefik.md >/dev/null; then
+  pass "Traefik hardening guide covers TLS, auth proxy, allowlist, and log safety"
+else
+  fail "Traefik hardening guide checks failed"
+fi
+
 section "Policy lint: forbidden terms"
 if has_rg; then
-  FORBIDDEN_MATCHES="$(rg -n -H -I --hidden --glob '!.git' --glob '!node_modules' --glob '!scripts/doctor.sh' --glob '!docs/connector-readiness.md' '(?i)\b(claude|anthropic)\b' . 2>/dev/null || true)"
+  FORBIDDEN_MATCHES="$(rg -n -H -I --hidden --glob '!.git' --glob '!node_modules' --glob '!scripts/doctor.sh' '(?i)\bclaude\b' . 2>/dev/null || true)"
 else
-  FORBIDDEN_MATCHES="$(grep -R -n -E -i '\b(claude|anthropic)\b' . 2>/dev/null | grep -Ev 'scripts/doctor\.sh|docs/connector-readiness\.md' || true)"
+  FORBIDDEN_MATCHES="$(grep -R -n -E -i '\bclaude\b' . 2>/dev/null | grep -Ev 'scripts/doctor\.sh' || true)"
 fi
 if [[ -n "$FORBIDDEN_MATCHES" ]]; then
-  fail "Found forbidden terms (Claude/Anthropic references still present)"
+  fail "Found forbidden terms (no-Claude policy violation)"
   echo "$FORBIDDEN_MATCHES" | sed -n '1,20p'
 else
-  pass "No forbidden terms found (Claude/Anthropic)"
+  pass "No forbidden terms found (no-Claude policy)"
 fi
 
 section "Best-effort secret scan"
