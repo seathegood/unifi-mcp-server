@@ -12,6 +12,11 @@ def test_settings_with_new_env_names(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("UNIFI_RATE_LIMIT_PERIOD", "30")
     monkeypatch.setenv("UNIFI_REQUEST_TIMEOUT", "15")
     monkeypatch.setenv("UNIFI_MAX_RETRIES", "4")
+    monkeypatch.setenv("MCP_TRANSPORT", "http")
+    monkeypatch.setenv("MCP_HOST", "127.0.0.1")
+    monkeypatch.setenv("MCP_PORT", "9090")
+    monkeypatch.setenv("MCP_PATH", "/mcp")
+    monkeypatch.setenv("LOG_LEVEL", "debug")
 
     settings = Settings()
 
@@ -22,6 +27,11 @@ def test_settings_with_new_env_names(monkeypatch: pytest.MonkeyPatch) -> None:
     assert settings.rate_limit_period == 30
     assert settings.request_timeout == 15
     assert settings.max_retries == 4
+    assert settings.mcp_transport == "http"
+    assert settings.mcp_host == "127.0.0.1"
+    assert settings.mcp_port == 9090
+    assert settings.mcp_path == "/mcp"
+    assert settings.log_level == "DEBUG"
 
 
 @pytest.mark.unit

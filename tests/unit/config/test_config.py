@@ -271,6 +271,12 @@ class TestSettingsDefaults:
         settings = Settings()
         assert settings.log_level == "INFO"
 
+    def test_log_level_accepts_lowercase(self, monkeypatch: pytest.MonkeyPatch):
+        monkeypatch.setenv("UNIFI_API_KEY", "test-key")
+        monkeypatch.setenv("LOG_LEVEL", "debug")
+        settings = Settings()
+        assert settings.log_level == "DEBUG"
+
     def test_default_cache_ttl(self, monkeypatch: pytest.MonkeyPatch):
         monkeypatch.setenv("UNIFI_API_KEY", "test-key")
         settings = Settings()
@@ -297,6 +303,26 @@ class TestSettingsDefaults:
         monkeypatch.setenv("UNIFI_API_KEY", "test-key")
         settings = Settings()
         assert settings.cloud_api_url == "https://api.ui.com"
+
+    def test_default_mcp_transport_settings(self, monkeypatch: pytest.MonkeyPatch):
+        monkeypatch.setenv("UNIFI_API_KEY", "test-key")
+        settings = Settings()
+        assert settings.mcp_transport == "stdio"
+        assert settings.mcp_host == "0.0.0.0"
+        assert settings.mcp_port == 8080
+        assert settings.mcp_path == "/mcp"
+
+    def test_custom_mcp_transport_settings(self, monkeypatch: pytest.MonkeyPatch):
+        monkeypatch.setenv("UNIFI_API_KEY", "test-key")
+        monkeypatch.setenv("MCP_TRANSPORT", "http")
+        monkeypatch.setenv("MCP_HOST", "127.0.0.1")
+        monkeypatch.setenv("MCP_PORT", "9090")
+        monkeypatch.setenv("MCP_PATH", "custom")
+        settings = Settings()
+        assert settings.mcp_transport == "http"
+        assert settings.mcp_host == "127.0.0.1"
+        assert settings.mcp_port == 9090
+        assert settings.mcp_path == "/custom"
 
     def test_default_audit_log_enabled(self, monkeypatch: pytest.MonkeyPatch):
         monkeypatch.setenv("UNIFI_API_KEY", "test-key")
