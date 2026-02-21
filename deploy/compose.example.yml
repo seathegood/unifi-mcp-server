@@ -6,15 +6,16 @@ services:
     env_file:
       - ./env
     environment:
+      # Safer default for remote connector exposure: retrieval-focused tools only.
+      MCP_PROFILE: deep-research
       MCP_TRANSPORT: http
       MCP_HOST: 0.0.0.0
       MCP_PORT: 8080
       MCP_PATH: /mcp
-      MCP_PROFILE: deep-research
     expose:
       - "8080"
-    # Traefik labels are examples only. Adjust names, entrypoints, certResolver,
-    # and middleware references for your environment.
+    # Traefik labels are examples only. Keep names generic and adapt router,
+    # middleware, entrypoint, and certResolver values to your environment.
     labels:
       - traefik.enable=true
       - traefik.http.routers.unifi-mcp.rule=Host(`unifi-mcp.<your-domain>`) && PathPrefix(`/mcp`)
@@ -22,8 +23,8 @@ services:
       - traefik.http.routers.unifi-mcp.tls=true
       - traefik.http.routers.unifi-mcp.tls.certresolver=letsencrypt
       - traefik.http.services.unifi-mcp.loadbalancer.server.port=8080
-      # Optional security middlewares (examples):
-      # - traefik.http.routers.unifi-mcp.middlewares=authentik@file,unifi-mcp-allowlist@file
+      # Optional middlewares (examples only):
+      # - traefik.http.routers.unifi-mcp.middlewares=<forward-auth>@file,<ip-allowlist>@file
 
 # Example only: attach this service to whichever Docker network your Traefik
 # instance already uses (for example, external: true + name: proxy).
