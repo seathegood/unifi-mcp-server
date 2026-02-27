@@ -1050,7 +1050,9 @@ async def get_client_dpi(
     offset: int | None = None,
 ) -> dict:
     """Get DPI statistics for a specific client."""
-    result = await dpi_tools.get_client_dpi(site_id, client_mac, settings, time_range, limit, offset)
+    result = await dpi_tools.get_client_dpi(
+        site_id, client_mac, settings, time_range, limit, offset
+    )
     return _redact_response(result)
 
 
@@ -2372,7 +2374,9 @@ def main() -> None:
     logger.info("Server ready to handle requests")
 
     if settings.mcp_transport == "http":
-        logger.info(f"HTTP endpoint: http://{settings.mcp_host}:{settings.mcp_port}{settings.mcp_path}")
+        logger.info(
+            f"HTTP endpoint: http://{settings.mcp_host}:{settings.mcp_port}{settings.mcp_path}"
+        )
 
         # Keep logging safe: access logs include method/path/status only, no headers/tokens.
         uvicorn_config = {"access_log": True}

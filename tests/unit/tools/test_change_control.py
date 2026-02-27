@@ -4,7 +4,13 @@ import asyncio
 
 import pytest
 
-from src.tools.change_control import apply_change, apply_plan, clear_plan_registry, create_plan, plan_change
+from src.tools.change_control import (
+    apply_change,
+    apply_plan,
+    clear_plan_registry,
+    create_plan,
+    plan_change,
+)
 from src.utils import ValidationError
 
 
