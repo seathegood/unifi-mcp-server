@@ -6,9 +6,14 @@ import os
 from collections.abc import Awaitable, Callable
 from typing import Any, TypeVar
 
-from agnost import config as agnost_config
-from agnost import track
 from fastmcp import FastMCP
+
+try:
+    from agnost import config as agnost_config
+    from agnost import track
+except ImportError:  # pragma: no cover - depends on optional runtime package shape
+    agnost_config = None
+    track = None
 
 from .config import Settings
 from .resources import ClientsResource, DevicesResource, NetworksResource, SitesResource
@@ -58,6 +63,9 @@ if os.getenv("AGNOST_ENABLED", "false").lower() in ("true", "1", "yes"):
     agnost_org_id = os.getenv("AGNOST_ORG_ID")
     if agnost_org_id:
         try:
+            if agnost_config is None or track is None:
+                raise RuntimeError("agnost package does not expose tracking helpers")
+
             # Configure tracking with input/output control
             disable_input = os.getenv("AGNOST_DISABLE_INPUT", "false").lower() in (
                 "true",
