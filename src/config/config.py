@@ -242,9 +242,7 @@ class Settings(BaseSettings):
         normalized = v.upper()
         valid_levels = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
         if normalized not in valid_levels:
-            raise ValueError(
-                "LOG_LEVEL must be one of: debug, info, warning, error, critical"
-            )
+            raise ValueError("LOG_LEVEL must be one of: debug, info, warning, error, critical")
         return normalized
 
     @field_validator("local_port", "mcp_port")

@@ -24,6 +24,7 @@ from .helpers import (
     sanitize_dict,
 )
 from .logger import get_logger, log_api_request, log_audit_event
+from .redaction import redact_client_device_data
 from .sanitize import sanitize_dict as sanitize_sensitive_dict
 from .sanitize import (
     sanitize_for_logging,
@@ -31,7 +32,6 @@ from .sanitize import (
     sanitize_log_message,
     sanitize_sensitive_data,
 )
-from .redaction import redact_client_device_data
 from .validators import (
     validate_confirmation,
     validate_device_id,

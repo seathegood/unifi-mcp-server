@@ -145,8 +145,12 @@ async def _build_documents(settings: Settings) -> list[Document]:
                 "clients": await _safe_get(client, f"/ea/sites/{_site_id(site)}/stat/alluser"),
                 "networks": await _safe_get(client, f"/ea/sites/{_site_id(site)}/rest/networkconf"),
                 "wlans": await _safe_get(client, f"/ea/sites/{_site_id(site)}/rest/wlanconf"),
-                "firewall_rules": await _safe_get(client, f"/ea/sites/{_site_id(site)}/rest/firewallrule"),
-                "port_profiles": await _safe_get(client, f"/ea/sites/{_site_id(site)}/rest/portconf"),
+                "firewall_rules": await _safe_get(
+                    client, f"/ea/sites/{_site_id(site)}/rest/firewallrule"
+                ),
+                "port_profiles": await _safe_get(
+                    client, f"/ea/sites/{_site_id(site)}/rest/portconf"
+                ),
                 "wans": await _safe_get(client, f"/integration/v1/sites/{_site_id(site)}/wans"),
             }
             for site in sites
@@ -509,9 +513,7 @@ def _render_port_profiles_doc(
                     or "default"
                 )
                 poe_mode = profile.get("poe_mode") or profile.get("poe") or "unknown"
-                lines.append(
-                    f"- {profile_name} | native_network={native_network} | poe={poe_mode}"
-                )
+                lines.append(f"- {profile_name} | native_network={native_network} | poe={poe_mode}")
 
         raw_payload["sites"].append(
             {
