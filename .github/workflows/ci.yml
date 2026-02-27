@@ -77,7 +77,7 @@ jobs:
 
       - name: Smoke test image
         run: |
-          docker run --rm --entrypoint python unifi-mcp-server:ci-${{ github.sha }} -c \
+          docker run --rm -e UNIFI_API_KEY=ci-smoke-test --entrypoint python unifi-mcp-server:ci-${{ github.sha }} -c \
             "import src.main"
 
     # TODO: Restore blocking mypy once the current type-error backlog is reduced to a maintainable level.
