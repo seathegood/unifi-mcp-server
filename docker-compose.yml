@@ -20,7 +20,7 @@ services:
       UNIFI_SITE_MANAGER_ENABLED: ${UNIFI_SITE_MANAGER_ENABLED:-false}
 
       # MCP Server Configuration
-      MCP_PROFILE: ${MCP_PROFILE:-full}
+      MCP_PROFILE: ${MCP_PROFILE:-deep-research}
       MCP_TRANSPORT: ${MCP_TRANSPORT:-http}
       MCP_HOST: ${MCP_HOST:-0.0.0.0}
       MCP_PORT: ${MCP_PORT:-8080}
