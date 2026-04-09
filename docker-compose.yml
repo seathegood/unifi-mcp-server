@@ -20,8 +20,11 @@ services:
       UNIFI_SITE_MANAGER_ENABLED: ${UNIFI_SITE_MANAGER_ENABLED:-false}
 
       # MCP Server Configuration
-      MCP_SERVER_PORT: ${MCP_SERVER_PORT:-3000}
-      MCP_LOG_LEVEL: ${MCP_LOG_LEVEL:-INFO}
+      MCP_PROFILE: ${MCP_PROFILE:-full}
+      MCP_TRANSPORT: ${MCP_TRANSPORT:-http}
+      MCP_HOST: ${MCP_HOST:-0.0.0.0}
+      MCP_PORT: ${MCP_PORT:-8080}
+      MCP_PATH: ${MCP_PATH:-/mcp}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       LOG_API_REQUESTS: ${LOG_API_REQUESTS:-true}
       UNIFI_AUDIT_LOG_ENABLED: ${UNIFI_AUDIT_LOG_ENABLED:-true}
@@ -57,9 +60,12 @@ services:
         condition: service_healthy
     volumes:
       - ./logs:/app/logs
-      - ./audit.log:/app/audit.log
     healthcheck:
-      test: ["CMD", "python", "-c", "import httpx; r=httpx.get('http://localhost:3000/health', timeout=3); r.raise_for_status()"]
+      test:
+        [
+          "CMD-SHELL",
+          "python -c \"import os,sys,httpx; u=f'http://127.0.0.1:{os.getenv(\\\"MCP_PORT\\\",\\\"8080\\\")}{os.getenv(\\\"MCP_PATH\\\",\\\"/mcp\\\")}'; r=httpx.get(u, timeout=3); sys.exit(0 if r.status_code < 500 else 1)\"",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -181,6 +181,11 @@ gha-creds-*.json
 tmp/
 temp/
 *.tmp
+_tmp/
+_reports/
+reports/
+audit.log
+audit.log/
 
 # Local live environment test results
 test-results/

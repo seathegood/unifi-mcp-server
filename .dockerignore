@@ -67,8 +67,14 @@ docker-compose*.yml
 # Logs
 logs/
 *.log
+audit.log
+audit.log/
 
 # Temporary files
 tmp/
 temp/
 *.tmp
+_tmp/
+_reports/
+reports/
+coverage.json

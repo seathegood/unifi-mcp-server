@@ -1,6 +1,6 @@
 {
   "name": "unifi-mcp-server",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "An MCP server that leverages official UniFi API",
   "main": "index.js",
   "keywords": [
@@ -9,15 +9,15 @@
     "model-context-protocol",
     "networking"
   ],
-  "author": "enuno",
+  "author": "seathegood",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/enuno/unifi-mcp-server.git"
+    "url": "https://github.com/seathegood/unifi-mcp-server.git"
   },
-  "mcpName": "io.github.enuno/unifi-mcp-server",
-  "homepage": "https://github.com/enuno/unifi-mcp-server",
+  "mcpName": "io.github.seathegood/unifi-mcp-server",
+  "homepage": "https://github.com/seathegood/unifi-mcp-server",
   "bugs": {
-    "url": "https://github.com/enuno/unifi-mcp-server/issues"
+    "url": "https://github.com/seathegood/unifi-mcp-server/issues"
   }
 }

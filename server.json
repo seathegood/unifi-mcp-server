@@ -1,62 +1,62 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.enuno/unifi-mcp-server",
+  "name": "io.github.seathegood/unifi-mcp-server",
   "description": "An MCP server that leverages official UniFi API",
   "repository": {
-    "url": "https://github.com/enuno/unifi-mcp-server",
+    "url": "https://github.com/seathegood/unifi-mcp-server",
     "source": "github"
   },
-  "version": "0.2.0",
+  "version": "0.2.1",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "unifi-mcp-server",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "transport": {
         "type": "stdio"
       },
       "environmentVariables": [
         {
-          "description": "UniFi Controller hostname or IP address",
-          "isRequired": true,
-          "format": "string",
-          "isSecret": false,
-          "name": "UNIFI_HOST"
-        },
-        {
-          "description": "UniFi Controller username",
-          "isRequired": true,
-          "format": "string",
-          "isSecret": false,
-          "name": "UNIFI_USERNAME"
-        },
-        {
-          "description": "UniFi Controller password",
+          "description": "UniFi API key (X-API-Key header)",
           "isRequired": true,
           "format": "string",
           "isSecret": true,
-          "name": "UNIFI_PASSWORD"
+          "name": "UNIFI_API_KEY"
         },
         {
-          "description": "UniFi Controller port (default: 443)",
-          "isRequired": false,
-          "format": "number",
-          "isSecret": false,
-          "name": "UNIFI_PORT"
-        },
-        {
-          "description": "Verify SSL certificate (default: true)",
-          "isRequired": false,
-          "format": "boolean",
-          "isSecret": false,
-          "name": "UNIFI_VERIFY_SSL"
-        },
-        {
-          "description": "UniFi site name (default: default)",
+          "description": "API mode: cloud-v1, cloud-ea, or local",
           "isRequired": false,
           "format": "string",
           "isSecret": false,
-          "name": "UNIFI_SITE"
+          "name": "UNIFI_API_TYPE"
+        },
+        {
+          "description": "UniFi Cloud API base URL",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false,
+          "name": "UNIFI_CLOUD_API_URL"
+        },
+        {
+          "description": "Local controller host/IP (required for local mode)",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false,
+          "name": "UNIFI_LOCAL_HOST"
+        },
+        {
+          "description": "Local controller port (default: 443)",
+          "isRequired": false,
+          "format": "number",
+          "isSecret": false,
+          "name": "UNIFI_LOCAL_PORT"
+        },
+        {
+          "description": "Verify local SSL certificates (default: true)",
+          "isRequired": false,
+          "format": "boolean",
+          "isSecret": false,
+          "name": "UNIFI_LOCAL_VERIFY_SSL"
         }
       ]
     }

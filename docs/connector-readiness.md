@@ -30,7 +30,7 @@ Use this checklist before exposing the MCP endpoint to ChatGPT connector workflo
 Run:
 
 ```bash
-scripts/doctor.sh
+make doctor
 ```
 
 Optional local runtime probe (if the server is running locally):

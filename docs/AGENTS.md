@@ -2,6 +2,27 @@
 
 This document provides universal rules, workflows, and best practices for all AI coding agents contributing to the UniFi MCP Server project. These guidelines ensure consistency, quality, and security across all AI-assisted development.
 
+## Local Work Contract (Read First)
+
+Use `make` as the command contract for local work and CI parity:
+
+- `make bootstrap`
+- `make doctor`
+- `make check`
+- `make lint`
+- `make format`
+- `make format-check`
+- `make unit`
+- `make clean-local`
+
+Environment and artifact conventions:
+
+- Keep `.env` local-only and untracked. Use `.env.example` as the template.
+- Use `.venv/` at repo root for local Python tooling.
+- Write transient artifacts to `_tmp/` (untracked).
+- Write generated reports to `_reports/` (untracked preferred).
+- Prefer `_reports/` over legacy `reports/`.
+
 ## Table of Contents
 
 - [Core Principles](#core-principles)

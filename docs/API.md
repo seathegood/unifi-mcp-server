@@ -57,7 +57,7 @@ Configure the MCP server using environment variables:
 | Variable | Description | Required | Default |
 |----------|-------------|----------|---------|
 | `UNIFI_API_KEY` | UniFi API Key from unifi.ui.com | Yes | - |
-| `UNIFI_API_TYPE` | API type: `cloud-v1`, `cloud-ea`, or `local` | No | `cloud-v1` |
+| `UNIFI_API_TYPE` | API type: `cloud-v1`, `cloud-ea`, or `local` | No | `cloud-ea` |
 | `UNIFI_CLOUD_API_URL` | Cloud API base URL | No | `https://api.ui.com` |
 | `UNIFI_LOCAL_HOST` | Local gateway hostname/IP (required for `local`) | No | - |
 | `UNIFI_LOCAL_PORT` | Local gateway port | No | `443` |
@@ -71,8 +71,11 @@ Configure the MCP server using environment variables:
 | `UNIFI_RETRY_BACKOFF_FACTOR` | Exponential backoff factor | No | `2.0` |
 | `UNIFI_CACHE_ENABLED` | Enable response caching | No | `true` |
 | `UNIFI_CACHE_TTL` | Cache TTL (seconds) | No | `300` |
-| `MCP_SERVER_PORT` | MCP server port | No | `3000` |
-| `MCP_LOG_LEVEL` | Logging level | No | `INFO` |
+| `MCP_TRANSPORT` | MCP transport mode: `stdio` or `http` | No | `stdio` |
+| `MCP_HOST` | MCP HTTP bind host | No | `0.0.0.0` |
+| `MCP_PORT` | MCP HTTP bind port | No | `8080` |
+| `MCP_PATH` | MCP HTTP endpoint path | No | `/mcp` |
+| `MCP_PROFILE` | Tool exposure profile: `deep-research` or `full` | No | `full` |
 | `LOG_LEVEL` | Application log level | No | `INFO` |
 | `LOG_API_REQUESTS` | Log API requests | No | `true` |
 | `UNIFI_AUDIT_LOG_ENABLED` | Enable audit logging | No | `true` |
@@ -100,8 +103,11 @@ unifi:
   cache_ttl: 300
 
 mcp:
-  server_port: 3000
-  log_level: INFO
+  transport: stdio
+  host: 0.0.0.0
+  port: 8080
+  path: /mcp
+  profile: full
 ```
 
 **Legacy env compatibility:** `UNIFI_HOST/PORT/VERIFY_SSL/SITE` and `UNIFI_RATE_LIMIT/UNIFI_TIMEOUT` are still accepted but deprecated; prefer the names listed above. Deprecations will be removed in a future major release.
@@ -2944,7 +2950,7 @@ Planned features for future releases:
 
 For issues, questions, or contributions:
 
-- **GitHub Issues:** <https://github.com/elvis/unifi-mcp-server/issues>
+- **GitHub Issues:** <https://github.com/seathegood/unifi-mcp-server/issues>
 - **Documentation:** See `README.md` and `CONTRIBUTING.md`
 - **Security Issues:** See `SECURITY.md`
 

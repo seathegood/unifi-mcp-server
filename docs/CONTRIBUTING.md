@@ -47,7 +47,7 @@ cd unifi-mcp-server
 3. Add the upstream repository as a remote:
 
 ```bash
-git remote add upstream https://github.com/elvis/unifi-mcp-server.git
+git remote add upstream https://github.com/enuno/unifi-mcp-server.git
 ```
 
 ## Development Setup
@@ -59,12 +59,8 @@ If you haven't already installed `uv`, follow the instructions at [https://githu
 ### 2. Create Virtual Environment and Install Dependencies
 
 ```bash
-# Create virtual environment and install dependencies
-uv venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Install the project with development dependencies
-uv pip install -e ".[dev]"
+make bootstrap
+# On Windows, use .venv\Scripts\python for direct commands.
 ```
 
 ### 3. Set Up Pre-commit Hooks
@@ -148,8 +144,8 @@ git checkout -b feature/your-feature-name
 1. Make your changes in your feature branch
 2. Write or update tests as necessary
 3. Update documentation if you're changing functionality
-4. Ensure all tests pass: `pytest`
-5. Ensure code passes linting: `pre-commit run --all-files`
+4. Ensure local contract checks pass: `make check`
+5. Optionally run hook parity: `pre-commit run --all-files`
 
 ## Code Style Guidelines
 
@@ -258,8 +254,8 @@ expired. Now it automatically re-authenticates.
 
 ### Before Submitting
 
-1. Ensure all tests pass: `pytest`
-2. Ensure code passes all pre-commit checks: `pre-commit run --all-files`
+1. Ensure checks pass: `make check`
+2. Ensure hook parity: `pre-commit run --all-files`
 3. Update the `README.md` or other documentation with details of changes
 4. Update the `API.md` if you've added new MCP tools or resources
 5. Rebase your branch on the latest `main` if needed
