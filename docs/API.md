@@ -242,7 +242,7 @@ docker run -i \
   -e UNIFI_API_TYPE=cloud \
   -e AGNOST_ENABLED=true \
   -e AGNOST_ORG_ID=your-organization-id \
-  ghcr.io/enuno/unifi-mcp-server:latest
+  ghcr.io/seathegood/unifi-mcp-server:latest
 ```
 
 **Privacy-Focused Tracking (MCP Client):**
@@ -2956,4 +2956,4 @@ For issues, questions, or contributions:
 
 ---
 
-**Last Updated:** 2025-11-16 | **API Version:** 0.2.0
+**Last Updated:** 2026-04-09 | **API Version:** 0.2.1

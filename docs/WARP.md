@@ -70,9 +70,9 @@ Context: See `src/tools/networks.py` for patterns, `API.md` for endpoint spec. O
 
 ## References
 
-- See [README.md](https://github.com/enuno/unifi-mcp-server/blob/main/README.md) for setup
-- See [API.md](https://github.com/enuno/unifi-mcp-server/blob/main/docs/API.md) for supported endpoints and formats
-- See [CONTRIBUTING.md](https://github.com/enuno/unifi-mcp-server/blob/main/docs/CONTRIBUTING.md) for collaboration practices
+- See [README.md](../README.md) for setup
+- See [API.md](API.md) for supported endpoints and formats
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for collaboration practices
 - Follow general agent/AI usage guidance in AGENTS.md
 
 ***

@@ -64,7 +64,7 @@ MCP Toolbox is a web-based analytics and monitoring dashboard for Model Context 
 
 ```bash
 # 1. Clone the repository (if not already done)
-git clone https://github.com/enuno/unifi-mcp-server.git
+git clone https://github.com/seathegood/unifi-mcp-server.git
 cd unifi-mcp-server
 
 # 2. Copy environment template
@@ -576,12 +576,12 @@ docker inspect --format='{{json .State.Health}}' mcp-toolbox | jq
 
 - **Agnost.ai Documentation**: <https://docs.agnost.ai>
 - **MCP Toolbox GitHub**: <https://github.com/googleapis/genai-toolbox>
-- **UniFi MCP Server**: <https://github.com/enuno/unifi-mcp-server>
+- **UniFi MCP Server**: <https://github.com/seathegood/unifi-mcp-server>
 
 ### Getting Help
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/enuno/unifi-mcp-server/issues)
-- **GitHub Discussions**: [Ask questions and share ideas](https://github.com/enuno/unifi-mcp-server/discussions)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/seathegood/unifi-mcp-server/issues)
+- **GitHub Discussions**: [Ask questions and share ideas](https://github.com/seathegood/unifi-mcp-server/discussions)
 - **Agnost Support**: <support@agnost.ai>
 
 ---
@@ -614,4 +614,4 @@ docker-compose up -d mcp-toolbox
 
 **Last Updated**: 2025-11-01
 **Version**: 1.0.0
-**Maintainer**: Elvis (@enuno)
+**Maintainer**: UniFi MCP Server Team

@@ -98,15 +98,13 @@ Edit the `.env` file with your UniFi API key:
 UNIFI_API_KEY=your-api-key-here
 
 # For cloud API (recommended)
-UNIFI_API_TYPE=cloud
-UNIFI_HOST=api.ui.com
-UNIFI_PORT=443
-UNIFI_VERIFY_SSL=true
+UNIFI_API_TYPE=cloud-v1
+UNIFI_CLOUD_API_URL=https://api.ui.com
 
 # OR for local gateway proxy
 # UNIFI_API_TYPE=local
-# UNIFI_HOST=192.168.1.1
-# UNIFI_VERIFY_SSL=false
+# UNIFI_LOCAL_HOST=192.168.1.1
+# UNIFI_LOCAL_VERIFY_SSL=false
 ```
 
 **CRITICAL SECURITY NOTES:**

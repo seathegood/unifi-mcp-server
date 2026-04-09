@@ -34,9 +34,9 @@ Once you push the tag, GitHub Actions automatically:
    - `linux/arm/v7` (32-bit ARM)
    - `linux/arm64/v8`
 4. **Pushes images to GitHub Container Registry**:
-   - `ghcr.io/enuno/unifi-mcp-server:latest`
-   - `ghcr.io/enuno/unifi-mcp-server:0.2.0`
-   - `ghcr.io/enuno/unifi-mcp-server:0.2`
+   - `ghcr.io/seathegood/unifi-mcp-server:latest`
+   - `ghcr.io/seathegood/unifi-mcp-server:0.2.1`
+   - `ghcr.io/seathegood/unifi-mcp-server:0.2`
 5. **Creates GitHub release**:
    - Generates release notes from commits
    - Attaches build artifacts
@@ -44,10 +44,8 @@ Once you push the tag, GitHub Actions automatically:
 6. **Generates changelog** - Automatic changelog from conventional commits
 
 **GitHub Actions Workflows:**
-- `.github/workflows/ci.yml` - Test suite and quality checks
-- `.github/workflows/security.yml` - Security scanning
-- `.github/workflows/release.yml` - Release automation (triggered on tag push)
-- `.github/workflows/docker-build.yml` - Multi-arch Docker builds
+- `.github/workflows/ci.yml` - Test suite, quality checks, and main-image publishing
+- `.github/workflows/release.yml` - Release image publishing (triggered on release published)
 
 ### 3. Manual Post-Release Steps
 
@@ -113,7 +111,7 @@ Register the server with the Model Context Protocol registry.
 
 **Prerequisites:**
 - `mcp-publisher` CLI tool installed
-- GitHub authentication (for `io.github.enuno` namespace)
+- GitHub authentication (for `io.github.seathegood` namespace)
 - npm package published (required first)
 
 **Installation:**
@@ -130,7 +128,7 @@ sudo mv mcp-publisher /usr/local/bin/
 **Steps:**
 
 ```bash
-# Authenticate with GitHub (required for io.github.enuno namespace)
+# Authenticate with GitHub (required for io.github.seathegood namespace)
 mcp-publisher login github
 
 # Publish to MCP registry
@@ -138,11 +136,11 @@ mcp-publisher login github
 mcp-publisher publish
 
 # Verify registration
-curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.enuno/unifi-mcp-server"
+curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.seathegood/unifi-mcp-server"
 ```
 
 **Registry Entry:**
-- **Namespace**: `io.github.enuno`
+- **Namespace**: `io.github.seathegood`
 - **Package**: `unifi-mcp-server`
 - **Source**: npm package
 - **Manifest**: `server.json` in npm package root
@@ -152,11 +150,11 @@ curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.enu
 Before creating a release tag, ensure:
 
 ### Code Quality
-- [ ] All tests passing locally (`pytest tests/unit/`)
+- [ ] Local checks passing (`make check`)
 - [ ] Coverage meets target (≥78%)
-- [ ] No linting errors (`ruff check src/ tests/`)
-- [ ] Code formatted (`black src/ tests/`)
-- [ ] Type checking clean (`mypy src/`)
+- [ ] No linting errors (`make lint`)
+- [ ] Code formatted (`make format` or `make format-check`)
+- [ ] Type checking clean (`make typecheck`)
 - [ ] Pre-commit hooks passing (`pre-commit run --all-files`)
 
 ### Security
@@ -193,25 +191,25 @@ After publishing, verify the release:
 ### Docker Images
 ```bash
 # Pull latest image
-docker pull ghcr.io/enuno/unifi-mcp-server:latest
+docker pull ghcr.io/seathegood/unifi-mcp-server:latest
 
 # Verify version
-docker run --rm ghcr.io/enuno/unifi-mcp-server:latest python -c "import src; print(src.__version__)"
+docker run --rm ghcr.io/seathegood/unifi-mcp-server:latest python -c "import src.main"
 
 # Test basic functionality
 docker run -i --rm \
   -e UNIFI_API_KEY=test-key \
   -e UNIFI_API_TYPE=cloud \
-  ghcr.io/enuno/unifi-mcp-server:latest
+  ghcr.io/seathegood/unifi-mcp-server:latest
 ```
 
 ### PyPI Package
 ```bash
 # Install from PyPI
-pip install unifi-mcp-server==0.2.0
+pip install unifi-mcp-server==0.2.1
 
 # Verify installation
-python -c "import unifi_mcp_server; print(unifi_mcp_server.__version__)"
+python -m pip show unifi-mcp-server
 ```
 
 ### npm Package
@@ -229,7 +227,7 @@ npm view unifi-mcp-server version
 curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=unifi-mcp-server"
 
 # Get server details
-curl "https://registry.modelcontextprotocol.io/v0.1/servers/io.github.enuno/unifi-mcp-server"
+curl "https://registry.modelcontextprotocol.io/v0.1/servers/io.github.seathegood/unifi-mcp-server"
 ```
 
 ### GitHub Release
@@ -337,18 +335,18 @@ gh api -X DELETE /user/packages/container/unifi-mcp-server/versions/VERSION_ID
 
 ## Resources
 
-- **GitHub Releases**: https://github.com/enuno/unifi-mcp-server/releases
-- **Docker Registry**: https://ghcr.io/enuno/unifi-mcp-server
+- **GitHub Releases**: https://github.com/seathegood/unifi-mcp-server/releases
+- **Docker Registry**: https://ghcr.io/seathegood/unifi-mcp-server
 - **PyPI Package**: https://pypi.org/project/unifi-mcp-server/
 - **npm Package**: https://www.npmjs.com/package/unifi-mcp-server
-- **MCP Registry**: Search for `io.github.enuno/unifi-mcp-server`
+- **MCP Registry**: Search for `io.github.seathegood/unifi-mcp-server`
 
 ## Additional Documentation
 
-- [RELEASE_COMPLETION_GUIDE.md](../RELEASE_COMPLETION_GUIDE.md) - Detailed release checklist
-- [VERIFICATION_REPORT.md](../VERIFICATION_REPORT.md) - Quality verification for major releases
-- [CONTRIBUTING.md](../CONTRIBUTING.md) - Contribution guidelines
-- [CHANGELOG.md](../CHANGELOG.md) - Version history
+- [RELEASE_COMPLETION_GUIDE.md](RELEASE_COMPLETION_GUIDE.md) - Detailed release checklist
+- [VERIFICATION_REPORT.md](VERIFICATION_REPORT.md) - Quality verification for major releases
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guidelines
+- [CHANGELOG.md](CHANGELOG.md) - Version history
 
 ---
 

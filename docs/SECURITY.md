@@ -470,7 +470,7 @@ This project strives to follow:
 For security-related questions or concerns:
 
 - **Security Team:** <security@homelab.local>
-- **Project Maintainer:** <elvis@homelab.local>
+- **Project Maintainers:** use repository owners and maintainers in `seathegood/unifi-mcp-server`
 - **GitHub Security:** Use GitHub Security Advisories
 
 ## Acknowledgments

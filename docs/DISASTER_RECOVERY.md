@@ -1,7 +1,7 @@
 # UniFi MCP Server - Disaster Recovery Guide
 
 **Last Updated**: 2025-11-28
-**Version**: 0.2.0
+**Version**: 0.2.1
 
 This guide provides comprehensive instructions for backup, restore, and disaster recovery operations using the UniFi MCP Server.
 
@@ -624,12 +624,12 @@ asyncio.run(emergency_rollback("backup_20250129_160000_preRestore.unf"))
 
 For backup/restore issues:
 
-- **GitHub Issues**: https://github.com/elvis/unifi-mcp-server/issues
+- **GitHub Issues**: https://github.com/seathegood/unifi-mcp-server/issues
 - **Documentation**: See `API.md` for tool references
 - **Security**: See `SECURITY.md` for vulnerability reporting
 
 ---
 
 **Last Updated**: 2025-11-28
-**Version**: 0.2.0
+**Version**: 0.2.1
 **Maintained By**: UniFi MCP Server Team
