@@ -12,9 +12,18 @@ MYPY := $(VENV)/bin/mypy
 .PHONY: bootstrap doctor check lint typecheck format format-check unit build clean-local
 
 bootstrap:
-	$(UV) venv $(VENV)
-	$(UV) pip install --python $(PYTHON) -e ".[dev]"
-	$(UV) pip install --python $(PYTHON) build
+	@set -e; \
+	if command -v $(UV) >/dev/null 2>&1; then \
+		echo "Using uv for bootstrap"; \
+		$(UV) venv $(VENV); \
+		$(UV) pip install --python $(PYTHON) -e ".[dev]"; \
+		$(UV) pip install --python $(PYTHON) build; \
+	else \
+		echo "uv not found; using python -m venv + pip fallback"; \
+		python3 -m venv $(VENV); \
+		$(PYTHON) -m pip install -e ".[dev]"; \
+		$(PYTHON) -m pip install build; \
+	fi
 
 doctor:
 	scripts/doctor.sh
