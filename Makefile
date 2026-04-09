@@ -37,7 +37,11 @@ unit:
 	$(PYTEST) tests/unit
 
 build:
-	$(PYTHON) -m pip show build >/dev/null 2>&1 || $(PYTHON) -m pip install build
+	@if ! $(PYTHON) -c "import build" >/dev/null 2>&1; then \
+		echo "ERROR: Python package 'build' is not installed in $(VENV)."; \
+		echo "Run 'make bootstrap' (online) or '$(PYTHON) -m pip install build'."; \
+		exit 1; \
+	fi
 	$(PYTHON) -m build
 
 check: doctor format-check lint unit
